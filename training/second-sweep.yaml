@@ -1,0 +1,38 @@
+program: train.py
+method: grid
+name: second-sweep
+project: information_extraction
+description: Second experiment investigating differences between BERT and T5, for different context sizes and with or without HTML
+
+parameters:
+  use_html:
+    values:
+      - false
+      - true
+  model:
+    values:
+      - bert
+      - t5
+  context_size:
+    values:
+      - 128
+      - 256
+      - 512
+  monitor_metric:
+    value: em
+  remove_null:
+    value: true
+  learning_rate:
+    value: 0.00005
+  optimizer:
+    value: adamw
+  batch_size:
+    value: 64
+  num_steps:
+    value: 25000
+  validation_interval:
+    value: 1000
+  early_stopping_patience:
+    value: 10
+  num_workers:
+    value: 32
