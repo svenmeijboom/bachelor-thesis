@@ -21,7 +21,13 @@ class BertDataset(BaseDataset):
 
     def __init__(self, files: List[str], bert_version: str, remove_null: bool = False, max_length: Optional[int] = None):
         self.tokenizer = BertTokenizer.from_pretrained(bert_version)
+        self.num_not_found = 0
+
         super().__init__(files, remove_null, max_length)
+
+        if self.num_not_found > 0:
+            print(f'Warning: BertDataset found {self.num_not_found} samples '
+                  f'where the context does not contain the answer!')
 
     def prepare_inputs(self):
         tokenized_inputs = self.tokenizer(self.features, self.inputs,
@@ -52,6 +58,8 @@ class BertDataset(BaseDataset):
                 if np.array_equal(tokenized_input[i:i + len(tokenized_target)], tokenized_target):
                     start, end = i, i + len(tokenized_target) - 1
                     break
+            else:
+                self.num_not_found += 1
 
             start_indices.append(start)
             end_indices.append(end)

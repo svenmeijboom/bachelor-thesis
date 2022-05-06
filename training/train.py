@@ -1,53 +1,48 @@
 from pathlib import Path
 
-from transformers.data.metrics.squad_metrics import compute_f1, compute_exact
-
 import wandb
 
 from callbacks import EarlyStopping, ModelCheckpoint, WandbCallback
 from data.module import SWDEDataModule
-from metrics import f1_metric, em_metric
+from metrics import compute_f1, compute_exact, f1_metric, em_metric
 from trainer import BertTrainer, T5Trainer
 
 
 def main():
-    wandb.init()
+    wandb.init(job_type='train')
 
     config = wandb.config
+
+    run_name = f'{config.model}-{config.context_size}-{config.representation}'
+
+    wandb.run.name = run_name
+
+    data_path = Path(f'~/Data/SWDE-{config.representation}').expanduser()
+    input_artifact = wandb.use_artifact(f'swde-{config.representation}:latest')
+    input_artifact.download(str(data_path))
+
+    train_files = list(data_path.glob(f'train/{config.vertical}/*-{config.context_size}.csv'))
+    val_files = list(data_path.glob(f'val/{config.vertical}/*-{config.context_size}.csv'))
+    test_files = list(data_path.glob(f'test/{config.vertical}/*-{config.context_size}.csv'))
+
+    print('Files used for training:', [str(f) for f in train_files])
+    print('Files used for validation:', [str(f) for f in val_files])
+    print('Files used for testing:', [str(f) for f in test_files])
 
     models = {
         'bert': {
             'model_version': 'SpanBERT/spanbert-base-cased',
             'trainer_class': BertTrainer,
-            'mini_batch_size': 16,
+            'mini_batch_size': 16 if config.context_size == 512 else 64,
         },
         't5': {
             'model_version': 't5-base',
             'trainer_class': T5Trainer,
-            'mini_batch_size': 8,
+            'mini_batch_size': 8 if config.context_size == 512 else 32,
         }
     }
 
     model_config = models[config.model]
-
-    if config.use_html:
-        artifact_name = 'swde-html'
-        data_path = Path('~/Data/SWDE-html/').expanduser()
-    else:
-        artifact_name = 'swde-text'
-        data_path = Path('~/Data/SWDE-text/').expanduser()
-
-    input_artifact = wandb.use_artifact(f'{artifact_name}:latest')
-    input_artifact.download(str(data_path))
-
-    # TODO: use larger dataset instead of single file
-    train_files = list(data_path.glob(f'train/book/barnesandnoble-{config.context_size}.csv'))
-    val_files = list(data_path.glob(f'val/book/abebooks-{config.context_size}.csv'))
-    test_files = list(data_path.glob(f'test/book/waterstones-{config.context_size}.csv'))
-
-    print(train_files)
-    print(val_files)
-    print(test_files)
 
     dataset = SWDEDataModule(model_config['model_version'],
                              max_length=config.context_size,
@@ -60,19 +55,17 @@ def main():
 
     monitor_mode = 'min' if config.monitor_metric == 'loss' else 'max'
 
-    html_slug = 'html' if config.use_html else 'text'
-    slug = f'{config.model}-{config.context_size}-{html_slug}'
     callbacks = [
-        ModelCheckpoint(f'models/{slug}.state_dict', restore=True,
+        ModelCheckpoint(f'models/{run_name}.state_dict', restore=True,
                         metric=config.monitor_metric, mode=monitor_mode),
-        WandbCallback('information_extraction', slug, do_init=False),
+        WandbCallback('information_extraction', run_name, do_init=False),
         EarlyStopping(patience=config.early_stopping_patience,
                       metric=config.monitor_metric, mode=monitor_mode),
     ]
 
     trainer_kwargs = {
         'train_loader': dataset.train_dataloader(),
-        'val_loader': dataset.val_dataloader(size=150 * config.batch_size),
+        'val_loader': dataset.val_dataloader(size=config.validation_batches * config.batch_size),
         'validate_per_steps': config.validation_interval,
         'metrics': {
             'f1': f1_metric,

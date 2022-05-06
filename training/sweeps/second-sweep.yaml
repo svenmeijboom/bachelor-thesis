@@ -5,10 +5,10 @@ project: information_extraction
 description: Second experiment investigating differences between BERT and T5, for different context sizes and with or without HTML
 
 parameters:
-  use_html:
+  representation:
     values:
-      - false
-      - true
+      - text
+      - html
   model:
     values:
       - bert
@@ -18,6 +18,8 @@ parameters:
       - 128
       - 256
       - 512
+  vertical:
+    value: book
   monitor_metric:
     value: em
   remove_null:
@@ -32,7 +34,9 @@ parameters:
     value: 25000
   validation_interval:
     value: 1000
+  validation_batches:
+    value: 150
   early_stopping_patience:
     value: 10
   num_workers:
-    value: 32
+    value: 16
