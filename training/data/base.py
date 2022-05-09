@@ -24,7 +24,7 @@ class BaseDataset(Dataset, ABC):
         self.prepare_inputs()
 
         end_time = time.time()
-        print(f'done in {end_time-start_time:.1f}s')
+        print(f'done in {end_time-start_time:.1f}s. Dataset contains {len(self.inputs)} samples.')
 
     @abstractmethod
     def prepare_inputs(self):
