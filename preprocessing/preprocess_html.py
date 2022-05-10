@@ -27,7 +27,8 @@ def main():
 
     for context_size in [128, 256, 512]:
         extractor = HtmlExtractor(input_dir, output_dir, tokenizer, context_size,
-                                  parent_depth=PARENT_DEPTH, num_workers=48)
+                                  parent_depth=PARENT_DEPTH, encode_id=True, encode_class=True,
+                                  encode_tag_subset={'div', 'a', 'span', 'p'}, num_workers=48)
         extractor.process_dataset()
 
     artifact = wandb.Artifact('swde-html', type='preprocessed-data',
