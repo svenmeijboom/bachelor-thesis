@@ -1,0 +1,47 @@
+program: try_html_representation.py
+method: grid
+name: html-representations-t5
+project: information_extraction
+description: Comparison between HTML representations for T5
+
+parameters:
+  representation:
+    values:
+      - text
+      - html-base
+      - html-id
+      - html-class
+      - html-id-class
+      - html-id-class-subset
+      - html-id-expanded
+      - html-class-expanded
+      - html-id-class-expanded
+      - html-id-class-expanded-subset
+  model:
+    value: t5
+  context_size:
+    value: 256
+  parent_depth:
+    value: 3
+  vertical:
+    value: book
+  monitor_metric:
+    value: em
+  remove_null:
+    value: true
+  learning_rate:
+    value: 0.00005
+  optimizer:
+    value: adamw
+  batch_size:
+    value: 64
+  num_steps:
+    value: 30000
+  validation_interval:
+    value: 1000
+  validation_batches:
+    value: 150
+  early_stopping_patience:
+    value: 10
+  num_workers:
+    value: 32
