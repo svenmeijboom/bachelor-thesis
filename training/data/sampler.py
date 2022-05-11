@@ -1,4 +1,5 @@
 from collections import Counter
+import sys
 from typing import Iterator, Optional
 
 import torch
@@ -43,3 +44,9 @@ class SWDESampler(Sampler[int]):
                 yield from self.single_iteration()
         else:
             yield from self.single_iteration()
+
+    def __len__(self) -> int:
+        if self.num_samples is None:
+            return sys.maxsize
+        else:
+            return self.num_samples
