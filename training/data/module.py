@@ -60,7 +60,7 @@ class SWDEDataModule:
             return DataLoader(self.data_train, batch_size=self.batch_size,
                               num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
 
-        sampler = SWDESampler(self.data_train, self.batch_size, replacement=True, remove_null=self.remove_null)
+        sampler = SWDESampler(self.data_train, replacement=True, remove_null=self.remove_null)
 
         return DataLoader(self.data_train, batch_size=self.batch_size, sampler=sampler,
                           num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
