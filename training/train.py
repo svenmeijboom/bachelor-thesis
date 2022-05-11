@@ -8,17 +8,27 @@ from metrics import compute_f1, compute_exact, f1_metric, em_metric
 from trainer import BertTrainer, T5Trainer
 
 
-def main():
-    wandb.init(job_type='train')
+MODELS = {
+    'bert': {
+        'model_version': 'SpanBERT/spanbert-base-cased',
+        'trainer_class': BertTrainer,
+    },
+    't5': {
+        'model_version': 't5-base',
+        'trainer_class': T5Trainer,
+    }
+}
 
-    config = wandb.config
 
-    run_name = config.run_name.format(**dict(config))
+def get_dataset(config: wandb.Config) -> SWDEDataModule:
+    if ':' in config.representation:
+        representation, tag = config.representation.split(':')
+    else:
+        representation = config.representation
+        tag = 'latest'
 
-    wandb.run.name = run_name
-
-    data_path = Path(f'~/Data/SWDE-{config.representation}').expanduser()
-    input_artifact = wandb.use_artifact(f'swde-{config.representation}:latest')
+    data_path = Path(f'~/Data/SWDE-{representation}-{tag}').expanduser()
+    input_artifact = wandb.use_artifact(f'swde-{representation}:{tag}')
     input_artifact.download(str(data_path))
 
     train_files = list(data_path.glob(f'train/{config.vertical}/*-{config.context_size}.csv'))
@@ -29,30 +39,24 @@ def main():
     print('Files used for validation:', [str(f) for f in val_files])
     print('Files used for testing:', [str(f) for f in test_files])
 
-    models = {
-        'bert': {
-            'model_version': 'SpanBERT/spanbert-base-cased',
-            'trainer_class': BertTrainer,
-            'mini_batch_size': 16 if config.context_size == 512 else 64,
-        },
-        't5': {
-            'model_version': 't5-base',
-            'trainer_class': T5Trainer,
-            'mini_batch_size': 8 if config.context_size == 512 else 32,
-        }
+    mini_batch_sizes = {
+        'bert': 16 if config.context_size == 512 else 64,
+        't5': 8 if config.context_size == 512 else 32,
     }
 
-    model_config = models[config.model]
-
-    dataset = SWDEDataModule(model_config['model_version'],
+    dataset = SWDEDataModule(MODELS[config.model]['model_version'],
                              max_length=config.context_size,
                              train_files=train_files,
                              val_files=val_files,
                              test_files=test_files,
-                             batch_size=model_config['mini_batch_size'],
+                             batch_size=mini_batch_sizes[config.model],
                              num_workers=config.num_workers,
                              remove_null=config.remove_null)
 
+    return dataset
+
+
+def get_trainer(dataset: SWDEDataModule, run_name: str, config: wandb.Config):
     monitor_mode = 'min' if config.monitor_metric == 'loss' else 'max'
 
     callbacks = [
@@ -80,7 +84,23 @@ def main():
         'callbacks': callbacks,
     }
 
-    with model_config['trainer_class'](model_config['model_version'], **trainer_kwargs) as trainer:
+    model_config = MODELS[config.model]
+
+    return model_config['trainer_class'](model_config['model_version'],
+                                         **trainer_kwargs)
+
+
+def main():
+    wandb.init(job_type='train')
+
+    config = wandb.config
+
+    run_name = config.run_name.format(**dict(config))
+    wandb.run.name = run_name
+
+    dataset = get_dataset(config)
+
+    with get_trainer(dataset, run_name, config) as trainer:
         trainer.train(config.num_steps, config.batch_size)
         trainer.perform_evaluation(
             train=dataset.train_dataloader(sample=False),
