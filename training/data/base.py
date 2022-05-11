@@ -23,6 +23,9 @@ class BaseDataset(Dataset, ABC):
         self.inputs, self.targets, self.features = self.read_data()
         self.prepare_inputs()
 
+        self.indices_with_data = [i for i, t in enumerate(self.targets) if t]
+        self.indices_without_data = [i for i, t in enumerate(self.targets) if not t]
+
         end_time = time.time()
         print(f'done in {end_time-start_time:.1f}s. Dataset contains {len(self.inputs)} samples.')
 

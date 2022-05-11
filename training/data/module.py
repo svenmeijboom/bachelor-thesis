@@ -5,6 +5,7 @@ from typing import List, Optional, Union
 from torch.utils.data import DataLoader, RandomSampler, WeightedRandomSampler
 
 from data.bert import BertDataset
+from data.sampler import SWDESampler
 from data.t5 import T5Dataset
 
 
@@ -59,21 +60,17 @@ class SWDEDataModule:
             return DataLoader(self.data_train, batch_size=self.batch_size,
                               num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
 
-        # We want the training loader to be balanced, so we give each sample a weight
-        # inversely proportional to the prevalence of their feature type
-        feature_counts = Counter(self.data_train.features)
-        weights = [1 / feature_counts[feature] for feature in self.data_train.features]
-
-        # We want to depend on the number of steps and not be limited by the amount of samples
-        # in the dataloader. Hence, we just sample for a large number (1e8), which is definitely
-        # larger than the total amount of samples
-        sampler = WeightedRandomSampler(weights, num_samples=10**8, replacement=True)
+        sampler = SWDESampler(self.data_train, self.batch_size, replacement=True, remove_null=self.remove_null)
 
         return DataLoader(self.data_train, batch_size=self.batch_size, sampler=sampler,
                           num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
 
     def val_dataloader(self, size: Optional[int] = None):
-        sampler = RandomSampler(self.data_val, num_samples=size)
+        if size is None:
+            return DataLoader(self.data_val, batch_size=self.batch_size,
+                              num_workers=self.num_workers, pin_memory=True, persistent_workers=True)
+
+        sampler = SWDESampler(self.data_val, size, replacement=False, remove_null=self.remove_null)
 
         return DataLoader(self.data_val, batch_size=self.batch_size, sampler=sampler,
                           num_workers=self.num_workers, pin_memory=True, persistent_workers=True)

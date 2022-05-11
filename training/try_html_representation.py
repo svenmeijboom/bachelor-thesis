@@ -90,9 +90,9 @@ def main():
                 'mini_batch_size': 16 if config.context_size == 512 else 64,
             },
             't5': {
-                'model_version': 't5-small',
+                'model_version': 't5-base',
                 'trainer_class': T5Trainer,
-                'mini_batch_size': 16 if config.context_size == 512 else 64,
+                'mini_batch_size': 8 if config.context_size == 512 else 32,
             }
         }
 

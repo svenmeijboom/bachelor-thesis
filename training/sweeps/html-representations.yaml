@@ -2,7 +2,7 @@ program: try_html_representation.py
 method: grid
 name: html-representations
 project: information_extraction
-description: Second experiment investigating differences between BERT and T5, for different context sizes and with or without HTML
+description: Comparison between HTML representations for BERT
 
 parameters:
   representation:

@@ -13,7 +13,7 @@ def main():
 
     config = wandb.config
 
-    run_name = f'{config.model}-{config.context_size}-{config.representation}'
+    run_name = config.run_name.format(**dict(config))
 
     wandb.run.name = run_name
 
