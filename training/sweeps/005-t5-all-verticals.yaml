@@ -6,9 +6,9 @@ description: Running T5 on all the available verticals. Also varies between incl
 
 parameters:
   run_name:
-    value: "{model}-{context_size}-{representation}-{vertical}-{remove_null}"
+    value: "{model}-{vertical}-{remove_null}"
   representation:
-    value: html
+    value: "html:v1"
   model:
     value: t5
   context_size:
