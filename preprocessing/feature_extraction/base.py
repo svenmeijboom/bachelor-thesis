@@ -31,7 +31,7 @@ DOMAINS = {
 
 
 class BaseExtractor(ABC):
-    output_format = '{split}/{vertical}/{website}/features-{max_length}.csv'
+    output_format = '{split}/{vertical}/{website}/{doc}-{max_length}.csv'
 
     def __init__(self, input_path: Path, output_path: Path, tokenizer: PreTrainedTokenizer,
                  max_length: int, domains: Optional[dict] = None, num_workers: int = 1):
@@ -50,15 +50,15 @@ class BaseExtractor(ABC):
 
     @staticmethod
     def text_representation(elem: etree.Element) -> str:
-        return re.sub(r'\s+', ' ', ' '.join(elem.itertext()))
+        return re.sub(r'\s+', ' ', ' '.join(elem.itertext())).strip()
 
-    def process_dataset(self):
+    def process_dataset(self) -> None:
         for split in ['train', 'val', 'test']:
             for vertical in os.listdir(self.input_path / split):
                 for website in os.listdir(self.input_path / split / vertical):
                     self.process_directory(split, vertical, website)
 
-    def process_directory(self, split: str, vertical: str, website: str) -> Path:
+    def process_directory(self, split: str, vertical: str, website: str) -> None:
         ground_truths = self.get_ground_truths(vertical, website)
 
         base_dir = self.input_path / split / vertical / website
@@ -70,10 +70,9 @@ class BaseExtractor(ABC):
 
         self.num_too_large = 0
 
-        extracted_features = []
         with tqdm(desc=f'{split}/{vertical}-{website}', total=len(files)) as pbar:
             with ProcessPoolExecutor(max_workers=self.num_workers) as executor:
-                future_to_id = {}
+                future_to_path = {}
 
                 for filename in files:
                     file_base = filename[:-4]  # Stripping off the .htm
@@ -83,33 +82,23 @@ class BaseExtractor(ABC):
                         ground_truths[file_base],
                     )
                     future.add_done_callback(lambda _: pbar.update())
-                    future_to_id[future] = file_base
+                    future_to_path[future] = self.output_path / self.output_format.format(
+                        split=split,
+                        vertical=vertical,
+                        website=website,
+                        doc=file_base,
+                        max_length=self.max_length,
+                    )
 
-                for future in as_completed(future_to_id):
-                    page_id = future_to_id[future]
+                for future in as_completed(future_to_path):
+                    path = future_to_path[future]
                     try:
-                        features = future.result()
-
-                        for feature in features:
-                            feature['id'] = page_id
-
-                        extracted_features.extend(features)
+                        path.parent.mkdir(parents=True, exist_ok=True)
+                        df_features = future.result()
+                        df_features.to_csv(path, index=False)
 
                     except Exception as e:
-                        print(f'{vertical}/{website}/{page_id}.htm raised exception: {e}')
-
-        df_features = pd.DataFrame(extracted_features)
-
-        destination = self.output_path / self.output_format.format(
-            split=split,
-            vertical=vertical,
-            website=website,
-            max_length=self.max_length,
-        )
-
-        os.makedirs(os.path.dirname(destination), exist_ok=True)
-
-        df_features.to_csv(destination, index=False)
+                        print(f'{vertical}/{website}/{path.stem}.htm raised exception: {e}')
 
         if self.num_too_large > 0:
             num_total = self.num_too_large + len(df_features)
@@ -117,9 +106,7 @@ class BaseExtractor(ABC):
                   f'({self.num_too_large / num_total * 100:.2f}%) unsplittable texts that are '
                   f'longer than {self.max_length} tokens')
 
-        return destination
-
-    def get_features_from_file(self, filename: str, ground_truth: dict) -> List[dict]:
+    def get_features_from_file(self, filename: str, ground_truth: dict) -> pd.DataFrame:
         with open(filename) as _file:
             html = _file.read()
 
@@ -130,10 +117,12 @@ class BaseExtractor(ABC):
         cleaner = Cleaner(style=True)
         cleaned_tree = cleaner.clean_html(tree.find('body'))
 
-        return self.extract_features(cleaned_tree, ground_truth)
+        features = self.extract_features(cleaned_tree, ground_truth)
+
+        return pd.DataFrame(features)
 
     def extract_features(self, elem: etree.Element, ground_truth: dict) -> List[dict]:
-        representation = self.feature_representation(elem)
+        representation = self.feature_representation(elem).strip()
 
         if not representation:
             return []

@@ -52,12 +52,14 @@ def main():
             }
 
             for split_name, split_files in split_mapping.items():
-                os.makedirs(split_base / split_name / vertical)
-
                 for website, filename in split_files:
+                    dest_path = split_base / split_name / vertical / normalize_name(website)
+
+                    os.makedirs(dest_path, exist_ok=True)
+
                     shutil.copy(
                         dataset_base / vertical / website / filename,
-                        split_base / split_name / vertical / f'{normalize_name(website)}-{filename}'
+                        dest_path / filename,
                     )
 
         shutil.copytree(dataset_base / 'groundtruth', split_base / 'groundtruth')

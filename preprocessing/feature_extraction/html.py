@@ -9,8 +9,6 @@ from feature_extraction.base import BaseExtractor
 
 
 class HtmlExtractor(BaseExtractor):
-    output_format = '{split}/{vertical}/{website}-{max_length}.csv'
-
     def __init__(self, input_path: Path, output_path: Path, tokenizer: PreTrainedTokenizer,
                  max_length: int, parent_depth: int = 1, encode_class: bool = True, encode_id: bool = True,
                  encode_tag_subset: Optional[Iterable[str]] = None, split_attributes: bool = False,
