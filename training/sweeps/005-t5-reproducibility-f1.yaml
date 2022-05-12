@@ -1,0 +1,42 @@
+program: train.py
+method: grid
+name: t5-reproducibility-f1
+project: information_extraction
+description: Running T5 multiple times, to see if the results are reproducible. Uses F1 metric to ensure we don't fall back to pre-trained model.
+
+parameters:
+  run_name:
+    value: "{model}-{context_size}-{representation}"
+  iteration:
+    values:
+    - 1
+    - 2
+    - 3
+  representation:
+    value: "html:v2"
+  model:
+    value: t5
+  context_size:
+    value: 256
+  vertical:
+    value: book
+  remove_null:
+    value: true
+  monitor_metric:
+    value: f1
+  learning_rate:
+    value: 0.00005
+  optimizer:
+    value: adamw
+  batch_size:
+    value: 64
+  num_steps:
+    value: 25000
+  validation_interval:
+    value: 1000
+  validation_batches:
+    value: 150
+  early_stopping_patience:
+    value: 10
+  num_workers:
+    value: 16
