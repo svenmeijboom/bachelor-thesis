@@ -1,15 +1,28 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
 import time
-from typing import List, Optional
+from typing import Iterable, Iterator, List, Optional, Tuple, Union
 
 import pandas as pd
 
 from torch.utils.data import Dataset
 
+from transformers import PreTrainedTokenizer
+
 
 class BaseDataset(Dataset, ABC):
-    def __init__(self, files: List[str], remove_null: bool = False, max_length: Optional[int] = None):
-        self.files = files
+    docs: List[str] = []
+    inputs: List[str] = []
+    targets: List[str] = []
+    features: List[str] = []
+
+    indices_with_data: List[int] = []
+    indices_without_data: List[int] = []
+
+    def __init__(self, files: Iterable[Union[str, Path]], tokenizer: PreTrainedTokenizer,
+                 remove_null: bool = False, max_length: Optional[int] = None):
+        self.files = list(map(Path, files))
+        self.tokenizer = tokenizer
         self.remove_null = remove_null
 
         self.tokenize_kwargs = {'return_tensors': 'pt', 'padding': True}
@@ -17,50 +30,39 @@ class BaseDataset(Dataset, ABC):
             self.tokenize_kwargs['truncation'] = True
             self.tokenize_kwargs['max_length'] = max_length
 
-        print(f'Initializing {self.__class__.__name__}...', end=' ', flush=True)
-        start_time = time.time()
+        if self.files:
+            print(f'Loading {self.__class__.__name__}...', end=' ', flush=True)
+            start = time.time()
 
-        self.inputs, self.targets, self.features = self.read_data()
-        self.prepare_inputs()
+            self.docs, self.inputs, self.targets, self.features = self.read_data()
+            self.prepare_inputs()
 
-        self.indices_with_data = [i for i, t in enumerate(self.targets) if t]
-        self.indices_without_data = [i for i, t in enumerate(self.targets) if not t]
+            self.indices_with_data = [i for i, t in enumerate(self.targets) if t]
+            self.indices_without_data = [i for i, t in enumerate(self.targets) if not t]
 
-        end_time = time.time()
-        print(f'done in {end_time-start_time:.1f}s. Dataset contains {len(self.inputs)} samples.')
+            end = time.time()
+            print(f'done in {end - start:.1f}s')
 
     @abstractmethod
     def prepare_inputs(self):
         raise NotImplementedError
 
     def read_data(self):
-        all_x, all_y, all_f = [], [], []
+        return [list(items) for items in zip(*(
+            sample
+            for file in self.files
+            for sample in self.read_csv(file)
+        ))]
 
-        for csv_file in self.files:
-            x, y, f = self.read_csv(csv_file)
-            all_x.extend(x)
-            all_y.extend(y)
-            all_f.extend(f)
+    def read_csv(self, file: Path) -> Iterator[Tuple[str, ...]]:
+        df = pd.read_csv(file, dtype=str).fillna('')
 
-        return all_x, all_y, all_f
-
-    def read_csv(self, csv_file: str):
-        df = pd.read_csv(csv_file, dtype=str).fillna('')
-
-        features = [col for col in df.columns if col not in ('id', 'text')]
-
-        x = []
-        y = []
-        f = []
+        features = [col for col in df.columns if col not in ('doc_id', 'text')]
 
         for _, row in df.iterrows():
             for feature in features:
                 if row[feature] or not self.remove_null:
-                    x.append(row['text'])
-                    y.append(row[feature])
-                    f.append(feature)
-
-        return x, y, f
+                    yield row['doc_id'], row['text'], row[feature], feature
 
     def __len__(self):
         return len(self.inputs)

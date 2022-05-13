@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from collections import defaultdict
-from typing import Any, Callable, Dict, Iterable, List, Optional, Tuple
+from collections import Counter, defaultdict
+from typing import Callable, Dict, Iterable, List, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -26,14 +26,14 @@ class BaseTrainer(ABC):
         self,
         model: Module,
         tokenizer: PreTrainedTokenizer,
-        train_loader: DataLoader,
+        train_loader: Optional[DataLoader] = None,
         val_loader: Optional[DataLoader] = None,
         validate_per_steps: int = -1,
         metrics: Optional[Dict[str, Callable]] = None,
         instance_metrics: Optional[Dict[str, Callable]] = None,
         device: Optional[str] = None,
         learning_rate: Optional[float] = 5e-5,
-        optimizer: Optional[str] = None,
+        optimizer: str = 'adamw',
         callbacks: Optional[List[BaseCallback]] = None,
     ):
         self.model = model
@@ -45,7 +45,7 @@ class BaseTrainer(ABC):
         self.instance_metrics = instance_metrics or {}
         self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
         self.learning_rate = learning_rate
-        self.optimizer_name = optimizer or 'adamw'
+        self.optimizer_name = optimizer
         self.callbacks = callbacks or []
         self.is_training = False
 
@@ -62,6 +62,9 @@ class BaseTrainer(ABC):
             raise ValueError('`val_loader` must be provided if `validate_per_steps` > 0')
 
     def train(self, num_steps: int, batch_size: int):
+        if self.train_loader is None:
+            raise ValueError('`train_loader` must be provided if model needs training')
+
         assert batch_size % self.train_loader.batch_size == 0, f'Batch size must be a multiple of {self.train_loader.batch_size}'
 
         grad_accumulation_steps = batch_size // self.train_loader.batch_size
@@ -159,7 +162,7 @@ class BaseTrainer(ABC):
             iterator = tqdm(dataloader, desc=label, leave=False)
 
         for batch in iterator:
-            loss, predictions = self.evaluate_step(batch)
+            loss, predictions, scores = self.evaluate_step(batch)
 
             agg_metrics['loss'].append(loss)
 
@@ -168,10 +171,12 @@ class BaseTrainer(ABC):
 
             if mode == 'full':
                 instance_data = {
+                    'doc_id': batch.docs,
                     'feature': batch.features,
                     'context': batch.inputs,
                     'expected': batch.targets,
                     'predicted': predictions,
+                    'score': scores,
                 }
 
                 for metric_name, metric_fct in self.instance_metrics.items():
@@ -206,9 +211,33 @@ class BaseTrainer(ABC):
         return results
 
     @abstractmethod
-    def evaluate_step(self, batch) -> Tuple[float, Iterable[str]]:
-        """Performs evaluation for a single batch. Returns the loss, and a list of predictions"""
+    def evaluate_step(self, batch) -> Tuple[float, Iterable[str], Iterable[float]]:
+        """Performs evaluation for a single batch. Returns the loss, a list of predictions, and a list of scores"""
         raise NotImplementedError
+
+    def process_documents(self, loader: DataLoader, metric: str = 'score'):
+        agg_functions = {
+            'count': lambda df: max(Counter(df['predicted'])),
+            'score': lambda df: df.loc[df['score'].idxmax()]['predicted'],
+        }
+
+        if metric not in agg_functions:
+            raise ValueError(f'Aggregation metric `{metric}` not supported')
+
+        result: Dict[str, pd.DataFrame] = self.evaluate(loader, mode='full', label=f'Evaluating document')
+
+        instances = result['instances']
+        instances = instances[~((instances['predicted'] == '') | pd.isnull(instances['predicted']))]
+
+        results = {}
+
+        for doc_id, doc_instances in instances.groupby('doc_id'):
+            results[doc_id] = {
+                feature: agg_functions[metric](doc_instances[doc_instances['feature'] == feature])
+                for feature in doc_instances['feature'].unique()
+            }
+
+        return results
 
     def stop(self):
         self.is_training = False

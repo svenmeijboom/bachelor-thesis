@@ -1,11 +1,12 @@
 from pathlib import Path
 
+import pandas as pd
 import wandb
 
 from callbacks import EarlyStopping, ModelCheckpoint, WandbCallback
 from data.module import SWDEDataModule
 from metrics import compute_f1, compute_exact, f1_metric, em_metric
-from trainer import BertTrainer, T5Trainer
+from trainer import BaseTrainer, BertTrainer, T5Trainer
 
 
 MODELS = {
@@ -35,9 +36,9 @@ def get_dataset(config: wandb.Config) -> SWDEDataModule:
     val_files = list(data_path.glob(f'val/{config.vertical}/*-{config.context_size}.csv'))
     test_files = list(data_path.glob(f'test/{config.vertical}/*-{config.context_size}.csv'))
 
-    print('Files used for training:', [str(f) for f in train_files])
-    print('Files used for validation:', [str(f) for f in val_files])
-    print('Files used for testing:', [str(f) for f in test_files])
+    print('Files used for training:', len([str(f) for f in train_files]))
+    print('Files used for validation:', len([str(f) for f in val_files]))
+    print('Files used for testing:', len([str(f) for f in test_files]))
 
     mini_batch_sizes = {
         'bert': 16 if config.context_size == 512 else 64,
@@ -90,6 +91,15 @@ def get_trainer(dataset: SWDEDataModule, run_name: str, config: wandb.Config):
                                          **trainer_kwargs)
 
 
+def predict_test_documents(dataset: SWDEDataModule, trainer: BaseTrainer) -> pd.DataFrame:
+    predictions = trainer.process_documents(dataset.test_dataloader())
+
+    for doc_id, preds in predictions.items():
+        preds['doc_id'] = doc_id
+
+    return pd.DataFrame(list(predictions.values()))
+
+
 def main():
     wandb.init(job_type='train')
 
@@ -107,6 +117,9 @@ def main():
             val=dataset.val_dataloader(),
             test=dataset.test_dataloader(),
         )
+
+        predictions = predict_test_documents(dataset, trainer)
+        predictions.to_csv(f'predictions-{run_name}.csv', index=False)
 
     wandb.finish()
 

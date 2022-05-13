@@ -29,9 +29,9 @@ class SWDESampler(Sampler[int]):
             rand_tensor = torch.multinomial(self.weights, self.batch_size, self.replacement, generator=self.generator)
             yield from iter(rand_tensor.tolist())
         else:
-            value_rand_tensor = torch.multinomial(self.value_weights, self.batch_size, self.replacement,
+            value_rand_tensor = torch.multinomial(self.value_weights, self.batch_size // 2, self.replacement,
                                                   generator=self.generator)
-            null_rand_tensor = torch.multinomial(self.null_weights, self.batch_size, self.replacement,
+            null_rand_tensor = torch.multinomial(self.null_weights, self.batch_size // 2, self.replacement,
                                                  generator=self.generator)
 
             for value_index, null_index in zip(value_rand_tensor, null_rand_tensor):

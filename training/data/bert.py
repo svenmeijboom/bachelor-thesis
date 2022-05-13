@@ -1,13 +1,10 @@
 from collections import namedtuple
-from typing import List, Optional
 
 import numpy as np
 
-from transformers import BertTokenizer
-
 from data.base import BaseDataset
 
-BertBatch = namedtuple('BertBatch', ['inputs', 'targets', 'features',
+BertBatch = namedtuple('BertBatch', ['docs', 'inputs', 'targets', 'features',
                                      'input_ids', 'attention_mask', 'token_type_ids',
                                      'start_positions', 'end_positions'])
 
@@ -19,11 +16,7 @@ class BertDataset(BaseDataset):
     start_positions: np.array
     end_positions: np.array
 
-    def __init__(self, files: List[str], bert_version: str, remove_null: bool = False, max_length: Optional[int] = None):
-        self.tokenizer = BertTokenizer.from_pretrained(bert_version)
-        self.num_not_found = 0
-
-        super().__init__(files, remove_null, max_length)
+    num_not_found: int = 0
 
     def prepare_inputs(self):
         tokenized_inputs = self.tokenizer(self.features, self.inputs,
@@ -48,7 +41,7 @@ class BertDataset(BaseDataset):
             self.end_positions = self.end_positions[not_null_indices]
         else:
             if self.num_not_found > 0:
-                print(f'Warning: BertDataset found {self.num_not_found} samples '
+                print(f'Warning: BertDataset found {self.num_not_found}/{len(self.inputs)} samples '
                       f'where the context does not contain the answer!')
 
     def get_answer_indices(self):
@@ -83,6 +76,7 @@ class BertDataset(BaseDataset):
 
     def __getitem__(self, item: int) -> BertBatch:
         return BertBatch(
+            self.docs[item],
             self.inputs[item],
             self.targets[item],
             self.features[item],

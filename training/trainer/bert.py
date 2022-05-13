@@ -41,12 +41,17 @@ class BertTrainer(BaseTrainer):
 
         return prediction.loss
 
-    def evaluate_step(self, batch: BertBatch) -> Tuple[float, Iterable[str]]:
+    def evaluate_step(self, batch: BertBatch) -> Tuple[float, Iterable[str], Iterable[float]]:
         with torch.no_grad():
             outputs = self.forward(batch)
 
-            start_indices = outputs.start_logits.argmax(axis=1)
-            end_indices = outputs.end_logits.argmax(axis=1)
+            start_outputs = outputs.start_logits.max(axis=1)
+            end_outputs = outputs.end_logits.max(axis=1)
+
+            start_indices = start_outputs.indices.tolist()
+            end_indices = end_outputs.indices.tolist()
+
+            scores = (start_outputs.values * end_outputs.values).tolist()
 
         predictions = []
         for i, (start, end) in enumerate(zip(start_indices, end_indices)):
@@ -54,6 +59,6 @@ class BertTrainer(BaseTrainer):
                 predictions.append('')
             else:
                 predict_answer_tokens = batch.input_ids[i, start:end + 1]
-                predictions.append(self.tokenizer.decode(predict_answer_tokens))
+                predictions.append(self.tokenizer.decode(predict_answer_tokens, skip_special_tokens=True))
 
-        return float(outputs.loss), predictions
+        return float(outputs.loss), predictions, scores
