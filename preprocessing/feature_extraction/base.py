@@ -31,7 +31,7 @@ DOMAINS = {
 
 
 class BaseExtractor(ABC):
-    output_format = '{split}/{vertical}/{website}/{doc}-{max_length}.csv'
+    output_format = '{split}/{vertical}/{website}/features-{max_length}.csv'
 
     def __init__(self, input_path: Path, output_path: Path, tokenizer: PreTrainedTokenizer,
                  max_length: int, domains: Optional[dict] = None, num_workers: int = 1):
@@ -70,35 +70,45 @@ class BaseExtractor(ABC):
 
         self.num_too_large = 0
 
-        with tqdm(desc=f'{split}/{vertical}-{website}', total=len(files)) as pbar:
+        extracted_features = []
+        with tqdm(desc=f'{split}/{vertical}-{website}-{self.max_length}', total=len(files)) as pbar:
             with ProcessPoolExecutor(max_workers=self.num_workers) as executor:
-                future_to_path = {}
+                future_to_id = {}
 
                 for filename in files:
-                    file_base = filename[:-4]  # Stripping off the .htm
+                    doc_id = Path(filename).stem  # Stripping off the .htm
                     future = executor.submit(
                         self.get_features_from_file,
                         base_dir / filename,
-                        ground_truths[file_base],
+                        ground_truths[doc_id],
                     )
                     future.add_done_callback(lambda _: pbar.update())
-                    future_to_path[future] = self.output_path / self.output_format.format(
-                        split=split,
-                        vertical=vertical,
-                        website=website,
-                        doc=file_base,
-                        max_length=self.max_length,
-                    )
+                    future_to_id[future] = f'{vertical}/{website}/{doc_id}'
 
-                for future in as_completed(future_to_path):
-                    path = future_to_path[future]
+                for future in as_completed(future_to_id):
+                    doc_id = future_to_id[future]
                     try:
-                        path.parent.mkdir(parents=True, exist_ok=True)
-                        df_features = future.result()
-                        df_features.to_csv(path, index=False)
+                        features = future.result()
+
+                        for feature in features:
+                            feature['doc_id'] = doc_id
+
+                        extracted_features.extend(features)
 
                     except Exception as e:
-                        print(f'{vertical}/{website}/{path.stem}.htm raised exception: {e}')
+                        print(f'{doc_id} raised exception: {e}')
+
+        df_features = pd.DataFrame(extracted_features)
+
+        destination = self.output_path / self.output_format.format(
+            split=split,
+            vertical=vertical,
+            website=website,
+            max_length=self.max_length,
+        )
+        destination.parent.mkdir(exist_ok=True, parents=True)
+
+        df_features.to_csv(destination, index=False)
 
         if self.num_too_large > 0:
             num_total = self.num_too_large + len(df_features)
@@ -106,7 +116,7 @@ class BaseExtractor(ABC):
                   f'({self.num_too_large / num_total * 100:.2f}%) unsplittable texts that are '
                   f'longer than {self.max_length} tokens')
 
-    def get_features_from_file(self, filename: str, ground_truth: dict) -> pd.DataFrame:
+    def get_features_from_file(self, filename: str, ground_truth: dict) -> List[dict]:
         with open(filename) as _file:
             html = _file.read()
 
@@ -117,9 +127,7 @@ class BaseExtractor(ABC):
         cleaner = Cleaner(style=True)
         cleaned_tree = cleaner.clean_html(tree.find('body'))
 
-        features = self.extract_features(cleaned_tree, ground_truth)
-
-        return pd.DataFrame(features)
+        return self.extract_features(cleaned_tree, ground_truth)
 
     def extract_features(self, elem: etree.Element, ground_truth: dict) -> List[dict]:
         representation = self.feature_representation(elem).strip()
