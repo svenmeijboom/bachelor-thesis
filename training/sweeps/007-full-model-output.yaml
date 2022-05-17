@@ -1,0 +1,43 @@
+program: train.py
+method: grid
+name: full-model-output
+project: information_extraction
+description: Running our models in the full model output setting, where results per document are aggregated into a final prediction
+
+parameters:
+  run_name:
+    value: "{model}-{representation}-{remove_null}"
+  representation:
+    values:
+    - text
+    - html
+  model:
+    values:
+    - bert
+    - t5
+  remove_null:
+    values:
+    - false
+    - true
+  context_size:
+    value: 256
+  vertical:
+    value: book
+  monitor_metric:
+    value: f1
+  learning_rate:
+    value: 0.00005
+  optimizer:
+    value: adamw
+  batch_size:
+    value: 64
+  num_steps:
+    value: 25000
+  validation_interval:
+    value: 1000
+  validation_batches:
+    value: 150
+  early_stopping_patience:
+    value: 10
+  num_workers:
+    value: 16
