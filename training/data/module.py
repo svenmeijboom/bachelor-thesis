@@ -3,7 +3,7 @@ from typing import Iterator, List, Optional, Union
 
 import torch
 from torch.utils.data import DataLoader, Dataset, Sampler
-from transformers import BertTokenizer, T5Tokenizer
+from transformers import BertTokenizerFast, T5TokenizerFast
 
 from data.base import BaseDataset
 from data.bert import BertDataset
@@ -39,10 +39,10 @@ class SWDEDataModule:
         self.remove_null = remove_null
 
         if 'bert' in model_version.lower():
-            self.tokenizer = BertTokenizer.from_pretrained(model_version)
+            self.tokenizer = BertTokenizerFast.from_pretrained(model_version)
             self.dataset_class = BertDataset
         elif 't5' in model_version.lower():
-            self.tokenizer = T5Tokenizer.from_pretrained(model_version)
+            self.tokenizer = T5TokenizerFast.from_pretrained(model_version)
             self.dataset_class = T5Dataset
         else:
             raise ValueError(f'Unsupported model version: {model_version}')

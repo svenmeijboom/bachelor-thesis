@@ -32,9 +32,9 @@ def get_dataset(config: wandb.Config) -> SWDEDataModule:
     input_artifact = wandb.use_artifact(f'swde-{representation}:{tag}')
     input_artifact.download(str(data_path))
 
-    train_files = list(data_path.glob(f'train/{config.vertical}/*-{config.context_size}.csv'))
-    val_files = list(data_path.glob(f'val/{config.vertical}/*-{config.context_size}.csv'))
-    test_files = list(data_path.glob(f'test/{config.vertical}/*-{config.context_size}.csv'))
+    train_files = list(data_path.glob(f'train/{config.vertical}/*/*-{config.context_size}.csv'))
+    val_files = list(data_path.glob(f'val/{config.vertical}/*/*-{config.context_size}.csv'))
+    test_files = list(data_path.glob(f'test/{config.vertical}/*/*-{config.context_size}.csv'))
 
     print('Files used for training:', len([str(f) for f in train_files]))
     print('Files used for validation:', len([str(f) for f in val_files]))
