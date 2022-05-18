@@ -112,11 +112,17 @@ def main():
 
     with get_trainer(dataset, run_name, config) as trainer:
         trainer.train(config.num_steps, config.batch_size)
-        trainer.perform_evaluation(
-            train=dataset.train_dataloader(sample=False),
-            val=dataset.val_dataloader(),
-            test=dataset.test_dataloader(),
-        )
+
+        eval_loaders = {
+            'train': lambda: dataset.train_dataloader(sample=False),
+            'val': lambda: dataset.val_dataloader(),
+            'test': lambda: dataset.test_dataloader(),
+        }
+
+        trainer.perform_evaluation(**{
+            dataset: eval_loaders[dataset]()
+            for dataset in config.evaluation_datasets
+        })
 
         predictions = predict_test_documents(dataset, trainer)
         predictions.to_csv(f'predictions-{run_name}.csv', index=False)
