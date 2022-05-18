@@ -3,6 +3,7 @@ from typing import Iterable, Tuple
 from transformers import BertTokenizer, BertForQuestionAnswering
 
 import torch
+from torch.nn import functional as F
 
 from data.bert import BertBatch
 from trainer.base import BaseTrainer
@@ -45,16 +46,30 @@ class BertTrainer(BaseTrainer):
         with torch.no_grad():
             outputs = self.forward(batch)
 
-            start_outputs = outputs.start_logits.max(axis=1)
-            end_outputs = outputs.end_logits.max(axis=1)
+            start_logits = outputs.start_logits
+            end_logits = outputs.end_logits
 
-            start_indices = start_outputs.indices.tolist()
-            end_indices = end_outputs.indices.tolist()
+            # Ensure output span can only be found in the context or the CLS token
+            mask = batch.token_type_ids == 0
+            mask[:, 0] = False
 
-            scores = (start_outputs.values * end_outputs.values).tolist()
+            start_logits[mask] = -10000
+            end_logits[mask] = -10000
+
+            # Obtain the matrix of possible probabilities
+            start_probs = F.softmax(start_logits, dim=-1)
+            end_probs = F.softmax(end_logits, dim=-1)
+            scores = torch.triu(start_probs[:, :, None] * end_probs[:, None, :])
+
+            # Find maximum probability for each input
+            answer_indices = [
+                (x // scores.shape[-1], x % scores.shape[-1])
+                for x in torch.argmax(scores.view(scores.shape[0], -1), dim=-1).tolist()
+            ]
+            scores = [float(scores[i, start, end]) for i, (start, end) in enumerate(answer_indices)]
 
         predictions = []
-        for i, (start, end) in enumerate(zip(start_indices, end_indices)):
+        for i, (start, end) in enumerate(answer_indices):
             if start == end == 0:
                 predictions.append('')
             else:

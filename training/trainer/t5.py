@@ -3,7 +3,7 @@ from typing import Iterable, Tuple
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 
 import torch
-from torch.nn.functional import softmax
+from torch.nn import functional as F
 from torch.nn import CrossEntropyLoss
 
 from data.t5 import T5Batch
@@ -61,7 +61,7 @@ class T5Trainer(BaseTrainer):
                                           return_dict_in_generate=True, output_scores=True)
 
             # Compute the probability of each token in the decoded sequences
-            stacked_scores = softmax(torch.stack(outputs.scores).permute(1, 0, 2), dim=2).double()
+            stacked_scores = F.softmax(torch.stack(outputs.scores).permute(1, 0, 2), dim=2).double()
             token_scores = torch.take_along_dim(stacked_scores, outputs.sequences[:, 1:, None], dim=2).squeeze()
 
             # Average the probabilities over each sequence to obtain score per sequence
