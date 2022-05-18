@@ -3,6 +3,7 @@ from typing import Iterable, Tuple
 from transformers import T5Tokenizer, T5ForConditionalGeneration
 
 import torch
+from torch.nn.functional import softmax
 from torch.nn import CrossEntropyLoss
 
 from data.t5 import T5Batch
@@ -47,7 +48,7 @@ class T5Trainer(BaseTrainer):
 
         return loss
 
-    def evaluate_step(self, batch: T5Batch) -> Tuple[float, Iterable[str]]:
+    def evaluate_step(self, batch: T5Batch) -> Tuple[float, Iterable[str], Iterable[float]]:
         with torch.no_grad():
             prediction = self.forward(batch)
 
@@ -56,9 +57,20 @@ class T5Trainer(BaseTrainer):
             target_labels = batch.target_labels.to(self.device)
             loss = self.loss_fn(logits.view(-1, logits.size(-1)), target_labels.flatten())
 
-            generated_outputs = self.model.generate(batch.input_ids.to(self.device))
-            decoded_outputs = self.tokenizer.batch_decode(generated_outputs)
+            outputs = self.model.generate(batch.input_ids.to(self.device),
+                                          return_dict_in_generate=True, output_scores=True)
 
-        predictions = [s.replace('</s>', '').replace('<pad>', '').strip() for s in decoded_outputs]
+            # Compute the probability of each token in the decoded sequences
+            stacked_scores = softmax(torch.stack(outputs.scores).permute(1, 0, 2), dim=2).double()
+            token_scores = torch.take_along_dim(stacked_scores, outputs.sequences[:, 1:, None], dim=2).squeeze()
 
-        return float(loss), predictions
+            # Average the probabilities over each sequence to obtain score per sequence
+            token_mask = outputs.sequences[:, 1:].gt(1)
+            sums = torch.where(token_mask, token_scores, 0.).sum(dim=1)
+            lengths = token_mask.sum(dim=1)
+
+            scores = (sums / lengths).tolist()
+
+        predictions = self.tokenizer.batch_decode(outputs.sequences, skip_special_tokens=True)
+
+        return float(loss), predictions, scores

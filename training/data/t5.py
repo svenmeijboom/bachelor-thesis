@@ -1,13 +1,10 @@
 from collections import namedtuple
-from typing import List, Optional
 
 import numpy as np
 
-from transformers import T5Tokenizer
-
 from data.base import BaseDataset
 
-T5Batch = namedtuple('T5Batch', ['inputs', 'targets', 'features',
+T5Batch = namedtuple('T5Batch', ['docs', 'inputs', 'targets', 'features',
                                  'input_ids', 'attention_mask', 'decoder_input_ids',
                                  'decoder_attention_mask', 'target_labels'])
 
@@ -18,10 +15,6 @@ class T5Dataset(BaseDataset):
     decoder_input_ids: np.array
     decoder_attention_mask: np.array
     target_labels: np.array
-
-    def __init__(self, files: List[str], t5_version: str, remove_null: bool = False, max_length: Optional[int] = None):
-        self.tokenizer = T5Tokenizer.from_pretrained(t5_version)
-        super().__init__(files, remove_null, max_length)
 
     def prepare_inputs(self):
         formatted_inputs = [
@@ -40,6 +33,7 @@ class T5Dataset(BaseDataset):
 
     def __getitem__(self, item: int) -> T5Batch:
         return T5Batch(
+            self.docs[item],
             self.inputs[item],
             self.targets[item],
             self.features[item],
