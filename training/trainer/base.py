@@ -196,7 +196,7 @@ class BaseTrainer(ABC):
         else:
             return {
                 'agg': agg_metrics,
-                'instances': pd.concat(full_results),
+                'instances': pd.concat(full_results, ignore_index=True),
             }
 
     def perform_evaluation(self, **loaders: DataLoader):
