@@ -19,7 +19,7 @@ def main():
         job_type='preprocess',
     )
 
-    input_artifact = wandb.use_artifact('train-val-test-split:latest')
+    input_artifact = wandb.use_artifact('random-split:latest')
     input_dir = Path(input_artifact.download(root=os.path.expanduser('~/Data/SWDE-split/')))
     output_dir = Path('~/Data/SWDE-html/').expanduser()
 
