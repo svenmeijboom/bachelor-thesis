@@ -72,8 +72,16 @@ class BertDataset(BaseDataset):
                 start_positions.append(0)
                 end_positions.append(0)
             else:
-                start_positions.append(encoding.char_to_token(i, start_char, sequence_index=1))
-                end_positions.append(encoding.char_to_token(i, end_char, sequence_index=1))
+                start_pos = encoding.char_to_token(i, start_char, sequence_index=1)
+                end_pos = encoding.char_to_token(i, end_char, sequence_index=1)
+
+                # TODO: preprocess the data so that the end position is never outside the input sequence again?
+                if start_pos is not None and end_pos is not None:
+                    start_positions.append(start_pos)
+                    end_positions.append(end_pos)
+                else:
+                    start_positions.append(0)
+                    end_positions.append(0)
 
         return BertBatch(
             docs,
