@@ -1,6 +1,7 @@
 from collections import namedtuple
+from typing import List
 
-import numpy as np
+import torch
 
 from data.base import BaseDataset
 
@@ -10,79 +11,78 @@ BertBatch = namedtuple('BertBatch', ['docs', 'inputs', 'targets', 'features',
 
 
 class BertDataset(BaseDataset):
-    input_ids: np.array
-    attention_mask: np.array
-    token_type_ids: np.array
-    start_positions: np.array
-    end_positions: np.array
-
-    num_not_found: int = 0
+    start_char_positions: List[int]
+    end_char_positions: List[int]
 
     def prepare_inputs(self):
-        tokenized_inputs = self.tokenizer(self.features, self.inputs,
-                                          **self.tokenize_kwargs)
+        self.start_char_positions = []
+        self.end_char_positions = []
 
-        self.input_ids = tokenized_inputs.input_ids
-        self.attention_mask = tokenized_inputs.attention_mask
-        self.token_type_ids = tokenized_inputs.token_type_ids
+        not_null_indices = []
+        num_not_found = 0
+        for index, (context, target) in enumerate(zip(self.inputs, self.targets)):
+            if not target:
+                # Use -1 to indicate the value was not found
+                self.start_char_positions.append(-1)
+                self.end_char_positions.append(-1)
+                continue
 
-        self.start_positions, self.end_positions, not_null_indices = self.get_answer_indices()
+            try:
+                # TODO: is this not too strict?
+                start_position = context.index(target)
+                end_position = start_position + len(target) - 1
+
+                self.start_char_positions.append(start_position)
+                self.end_char_positions.append(end_position)
+
+                not_null_indices.append(index)
+
+            except ValueError:
+                # Use -1 to indicate the value was not found
+                self.start_char_positions.append(-1)
+                self.end_char_positions.append(-1)
+                num_not_found += 1
 
         if self.remove_null:
             self.inputs = [self.inputs[i] for i in not_null_indices]
             self.targets = [self.targets[i] for i in not_null_indices]
             self.features = [self.features[i] for i in not_null_indices]
+            self.start_char_positions = [self.start_char_positions[i] for i in not_null_indices]
+            self.end_char_positions = [self.end_char_positions[i] for i in not_null_indices]
+        elif num_not_found > 0:
+            print(f'Warning: BertDataset found {num_not_found}/{len(self.inputs)} samples '
+                  f'where the context does not contain the answer!')
 
-            self.input_ids = self.input_ids[not_null_indices]
-            self.attention_mask = self.attention_mask[not_null_indices]
-            self.token_type_ids = self.token_type_ids[not_null_indices]
+    def __getitem__(self, idx: List[int]) -> BertBatch:
+        docs = [self.docs[i] for i in idx]
+        inputs = [self.inputs[i] for i in idx]
+        targets = [self.targets[i] for i in idx]
+        features = [self.features[i] for i in idx]
+        start_char_positions = [self.start_char_positions[i] for i in idx]
+        end_char_positions = [self.end_char_positions[i] for i in idx]
 
-            self.start_positions = self.start_positions[not_null_indices]
-            self.end_positions = self.end_positions[not_null_indices]
-        else:
-            if self.num_not_found > 0:
-                print(f'Warning: BertDataset found {self.num_not_found}/{len(self.inputs)} samples '
-                      f'where the context does not contain the answer!')
-
-    def get_answer_indices(self):
-        not_null_indices = []
+        encoding = self.tokenizer(features, inputs, **self.tokenize_kwargs)
 
         start_positions = []
         end_positions = []
-        for index, (tokenized_input, target) in enumerate(zip(self.input_ids, self.targets)):
-            if not target:
+
+        for i, (start_char, end_char) in enumerate(zip(start_char_positions, end_char_positions)):
+            if start_char < 0:
+                # In this case, the answer does not exist in the context
                 start_positions.append(0)
                 end_positions.append(0)
-                continue
-
-            tokenized_target = self.tokenizer(target, return_tensors='pt', add_special_tokens=False).input_ids
-
-            tokenized_target = tokenized_target.flatten()
-            tokenized_input = tokenized_input.flatten()
-
-            start, end = 0, 0
-            for i in range(0, len(tokenized_input) - len(tokenized_target) + 1):
-                if np.array_equal(tokenized_input[i:i + len(tokenized_target)], tokenized_target):
-                    start, end = i, i + len(tokenized_target) - 1
-                    not_null_indices.append(index)
-                    break
             else:
-                self.num_not_found += 1
+                start_positions.append(encoding.char_to_token(i, start_char, sequence_index=1))
+                end_positions.append(encoding.char_to_token(i, end_char, sequence_index=1))
 
-            start_positions.append(start)
-            end_positions.append(end)
-
-        return np.array(start_positions, dtype=np.int64), np.array(end_positions, dtype=np.int64), not_null_indices
-
-    def __getitem__(self, item: int) -> BertBatch:
         return BertBatch(
-            self.docs[item],
-            self.inputs[item],
-            self.targets[item],
-            self.features[item],
-            self.input_ids[item],
-            self.attention_mask[item],
-            self.token_type_ids[item],
-            self.start_positions[item],
-            self.end_positions[item],
+            docs,
+            inputs,
+            targets,
+            features,
+            encoding.input_ids,
+            encoding.attention_mask,
+            encoding.token_type_ids,
+            torch.as_tensor(start_positions),
+            torch.as_tensor(end_positions),
         )

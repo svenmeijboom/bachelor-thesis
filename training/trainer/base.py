@@ -63,9 +63,15 @@ class BaseTrainer(ABC):
         if self.train_loader is None:
             raise ValueError('`train_loader` must be provided if model needs training')
 
-        assert batch_size % self.train_loader.batch_size == 0, f'Batch size must be a multiple of {self.train_loader.batch_size}'
+        mini_batch_size = self.train_loader.batch_size or getattr(self.train_loader.sampler, 'batch_size')
 
-        grad_accumulation_steps = batch_size // self.train_loader.batch_size
+        if mini_batch_size is None:
+            print('Warning: could not recognize mini-batch size. Disabling gradient accumulation...')
+            mini_batch_size = batch_size
+        else:
+            assert batch_size % mini_batch_size == 0, f'Batch size must be a multiple of {mini_batch_size}'
+
+        grad_accumulation_steps = batch_size // mini_batch_size
 
         self.on_train_start({
             'num_steps': num_steps,

@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Iterator, List, Optional, Union
 
 import torch
-from torch.utils.data import DataLoader, Dataset, RandomSampler, Sampler
+from torch.utils.data import BatchSampler, DataLoader, RandomSampler, Sampler, SequentialSampler
 from transformers import BertTokenizerFast, T5TokenizerFast
 
 from data.base import BaseDataset
@@ -61,25 +61,29 @@ class SWDEDataModule:
     def train_dataloader(self, size: Optional[int] = None):
         if size is None:
             # Run training on infinite dataloader
-            sampler = SWDESampler(self.data_train, replacement=True, remove_null=self.remove_null)
+            base_sampler = SWDESampler(self.data_train, replacement=True, remove_null=self.remove_null)
         else:
             # Evaluate model on training set using subset of the data
-            sampler = RandomSampler(self.data_train, num_samples=size)
+            base_sampler = RandomSampler(self.data_train, num_samples=size)
 
-        return self._data_loader(self.data_train, sampler)
+        return self._data_loader(self.data_train, base_sampler)
 
     def val_dataloader(self, size: Optional[int] = None):
         if size is None:
-            sampler = None
+            base_sampler = None
         else:
-            sampler = SWDESampler(self.data_val, size, replacement=True, remove_null=self.remove_null)
+            base_sampler = SWDESampler(self.data_val, size, replacement=True, remove_null=self.remove_null)
 
-        return self._data_loader(self.data_val, sampler)
+        return self._data_loader(self.data_val, base_sampler)
 
     def test_dataloader(self):
         return self._data_loader(self.data_test)
 
-    def _data_loader(self, dataset: Dataset, sampler: Optional[Sampler] = None):
-        return DataLoader(dataset, batch_size=self.batch_size, sampler=sampler,
-                          num_workers=self.num_workers, pin_memory=True, persistent_workers=True,
-                          worker_init_fn=set_worker_sharing_strategy)
+    def _data_loader(self, dataset: BaseDataset, base_sampler: Optional[Sampler] = None):
+        if base_sampler is None:
+            base_sampler = SequentialSampler(dataset)
+
+        sampler = BatchSampler(base_sampler, batch_size=self.batch_size, drop_last=False)
+
+        return DataLoader(dataset, sampler=sampler, batch_size=None, num_workers=self.num_workers, pin_memory=True,
+                          persistent_workers=True, worker_init_fn=set_worker_sharing_strategy)

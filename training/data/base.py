@@ -43,9 +43,8 @@ class BaseDataset(Dataset, ABC):
             end = time.time()
             print(f'done in {end - start:.1f}s')
 
-    @abstractmethod
     def prepare_inputs(self):
-        raise NotImplementedError
+        pass
 
     def read_data(self):
         return [list(items) for items in zip(*(
