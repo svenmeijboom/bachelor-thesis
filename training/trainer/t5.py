@@ -50,12 +50,10 @@ class T5Trainer(BaseTrainer):
 
     def evaluate_step(self, batch: T5Batch) -> Tuple[float, Iterable[str], Iterable[float]]:
         with torch.no_grad():
-            prediction = self.forward(batch)
-
-            logits = prediction.logits
-
-            target_labels = batch.target_labels.to(self.device)
-            loss = self.loss_fn(logits.view(-1, logits.size(-1)), target_labels.flatten())
+            if any(batch.targets):
+                loss = float(self.train_step(batch))
+            else:
+                loss = -1
 
             outputs = self.model.generate(batch.input_ids.to(self.device),
                                           return_dict_in_generate=True, output_scores=True)
@@ -73,4 +71,4 @@ class T5Trainer(BaseTrainer):
 
         predictions = self.tokenizer.batch_decode(outputs.sequences, skip_special_tokens=True)
 
-        return float(loss), predictions, scores
+        return loss, predictions, scores

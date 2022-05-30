@@ -30,6 +30,56 @@ def normalize_answer(s):
     return remove_accents(white_space_fix(remove_articles(remove_punc(lower(s)))))
 
 
+def normalize_with_mapping(s):
+    """
+    Lower text and remove punctuation, articles, accents and extra whitespace.
+    Keeps track of mapping between characters in the normalized string and their positions in the original string.
+    """
+
+    def replace_with_mapping(pattern, text, mapping):
+        regex = re.compile(pattern, re.UNICODE)
+
+        new_mapping = []
+        new_text = ''
+
+        start = 0
+        for match in regex.finditer(text):
+            new_mapping.extend(mapping[start:match.start()])
+            new_mapping.append(-1)
+            new_text += text[start:match.start()] + ' '
+            start = match.end()
+
+        new_text += text[start:]
+        new_mapping.extend(mapping[start:])
+
+        return new_text, new_mapping
+
+    def remove_articles(text, mapping):
+        return replace_with_mapping(r"\b(a|an|the)\b", text, mapping)
+
+    def white_space_fix(text, mapping):
+        return replace_with_mapping(r"\s+", text, mapping)
+
+    def remove_punc(text, mapping):
+        return replace_with_mapping(r'[{}]+'.format(re.escape(string.punctuation)), text, mapping)
+
+    def lower(text, mapping):
+        return text.lower(), mapping
+
+    def remove_accents(text, mapping):
+        return unidecode(text), mapping
+
+    char_mapping = list(range(len(s)))
+
+    s, char_mapping = lower(s, char_mapping)
+    s, char_mapping = remove_punc(s, char_mapping)
+    s, char_mapping = remove_articles(s, char_mapping)
+    s, char_mapping = white_space_fix(s, char_mapping)
+    s, char_mapping = remove_accents(s, char_mapping)
+
+    return s, char_mapping
+
+
 def get_tokens(s):
     if not s:
         return []

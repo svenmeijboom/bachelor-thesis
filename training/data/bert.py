@@ -4,6 +4,7 @@ from typing import List
 import torch
 
 from data.base import BaseDataset
+from metrics import normalize_answer, normalize_with_mapping
 
 BertBatch = namedtuple('BertBatch', ['docs', 'inputs', 'targets', 'features',
                                      'input_ids', 'attention_mask', 'token_type_ids',
@@ -27,17 +28,20 @@ class BertDataset(BaseDataset):
                 self.end_char_positions.append(-1)
                 continue
 
-            try:
-                # TODO: is this not too strict?
-                start_position = context.index(target)
-                end_position = start_position + len(target) - 1
+            # We find the normalized answer in the normalized context, and then map that back to the original sequence
+            normalized_context, char_mapping = normalize_with_mapping(context)
+            normalized_target = normalize_answer(target)
 
-                self.start_char_positions.append(start_position)
-                self.end_char_positions.append(end_position)
+            try:
+                start_position = normalized_context.index(normalized_target)
+                end_position = start_position + len(normalized_target) - 1
+
+                self.start_char_positions.append(char_mapping[start_position])
+                self.end_char_positions.append(char_mapping[end_position])
 
                 not_null_indices.append(index)
 
-            except ValueError:
+            except (ValueError, IndexError):
                 # Use -1 to indicate the value was not found
                 self.start_char_positions.append(-1)
                 self.end_char_positions.append(-1)

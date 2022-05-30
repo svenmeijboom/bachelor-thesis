@@ -1,12 +1,11 @@
 from pathlib import Path
 
-import pandas as pd
 import wandb
 
 from callbacks import EarlyStopping, ModelCheckpoint, WandbCallback
 from data.module import SWDEDataModule
-from metrics import compute_f1, compute_exact, f1_metric, em_metric
-from trainer import BaseTrainer, BertTrainer, T5Trainer
+from metrics import compute_f1, compute_exact
+from trainer import BertTrainer, T5Trainer
 
 
 MODELS = {

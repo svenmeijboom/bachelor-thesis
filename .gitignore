@@ -8,3 +8,4 @@ wandb/
 /notebooks/
 
 _legacy_*.py
+*.csv
