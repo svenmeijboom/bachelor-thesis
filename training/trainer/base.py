@@ -232,8 +232,6 @@ class BaseTrainer(ABC):
         raise NotImplementedError
 
     def segments_to_documents(self, instances: pd.DataFrame) -> pd.DataFrame:
-        instances = instances[~((instances['predicted'] == '') | pd.isnull(instances['predicted']))]
-
         results = []
 
         for doc_id, doc_instances in instances.groupby('doc_id'):
@@ -242,10 +240,21 @@ class BaseTrainer(ABC):
             scores = defaultdict(list)
 
             for feature, predictions in doc_instances.groupby('feature'):
-                best_prediction = predictions.loc[predictions['score'].idxmax()]
+                not_null_predictions = predictions[~((predictions['predicted'] == '') |
+                                                     pd.isnull(predictions['predicted']))]
 
-                doc_predictions[feature] = best_prediction['predicted']
-                doc_predictions[f'{feature}/score'] = best_prediction['score']
+                if not_null_predictions.empty:
+                    # We could not find any segment with an answer,
+                    # so we choose the prediction with the lowest confidence to be safe
+                    best_prediction = predictions.loc[predictions['score'].idxmin()]
+                    doc_predictions[feature] = best_prediction['predicted']
+                    doc_predictions[f'{feature}/score'] = 1 - best_prediction['score']
+                else:
+                    # We were able to find segments that contain an answer,
+                    # so we pick the one with the highest confidence
+                    best_prediction = not_null_predictions.loc[not_null_predictions['score'].idxmax()]
+                    doc_predictions[feature] = best_prediction['predicted']
+                    doc_predictions[f'{feature}/score'] = best_prediction['score']
 
                 for metric_name in self.metrics:
                     doc_predictions[f'{feature}/{metric_name}'] = best_prediction[metric_name]

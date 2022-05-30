@@ -36,8 +36,11 @@ class BertDataset(BaseDataset):
                 start_position = normalized_context.index(normalized_target)
                 end_position = start_position + len(normalized_target) - 1
 
-                self.start_char_positions.append(char_mapping[start_position])
-                self.end_char_positions.append(char_mapping[end_position])
+                start_position = char_mapping[start_position]
+                end_position = char_mapping[end_position]
+
+                self.start_char_positions.append(start_position)
+                self.end_char_positions.append(end_position)
 
                 not_null_indices.append(index)
 
@@ -79,7 +82,6 @@ class BertDataset(BaseDataset):
                 start_pos = encoding.char_to_token(i, start_char, sequence_index=1)
                 end_pos = encoding.char_to_token(i, end_char, sequence_index=1)
 
-                # TODO: preprocess the data so that the end position is never outside the input sequence again?
                 if start_pos is not None and end_pos is not None:
                     start_positions.append(start_pos)
                     end_positions.append(end_pos)
