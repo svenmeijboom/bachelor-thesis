@@ -2,11 +2,12 @@ import collections
 import re
 import string
 
-import numpy as np
+
+from unidecode import unidecode
 
 
 def normalize_answer(s):
-    """Lower text and remove punctuation, articles and extra whitespace."""
+    """Lower text and remove punctuation, articles, accents and extra whitespace."""
 
     def remove_articles(text):
         regex = re.compile(r"\b(a|an|the)\b", re.UNICODE)
@@ -23,7 +24,10 @@ def normalize_answer(s):
     def lower(text):
         return text.lower()
 
-    return white_space_fix(remove_articles(remove_punc(lower(s))))
+    def remove_accents(text):
+        return unidecode(text)
+
+    return remove_accents(white_space_fix(remove_articles(remove_punc(lower(s)))))
 
 
 def get_tokens(s):
@@ -50,11 +54,3 @@ def compute_f1(a_gold, a_pred):
     recall = 1.0 * num_same / len(gold_toks)
     f1 = (2 * precision * recall) / (precision + recall)
     return f1
-
-
-def f1_metric(y_true, y_pred):
-    return np.mean([compute_f1(a_true, a_pred) for a_true, a_pred in zip(y_true, y_pred)])
-
-
-def em_metric(y_true, y_pred):
-    return np.mean([compute_exact(a_true, a_pred) for a_true, a_pred in zip(y_true, y_pred)])

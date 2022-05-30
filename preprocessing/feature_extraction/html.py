@@ -9,6 +9,11 @@ from feature_extraction.base import BaseExtractor
 
 
 class HtmlExtractor(BaseExtractor):
+    parent_prefix = 'p'
+    tag_suffix = 't'
+    id_suffix = 'i'
+    class_suffix = 'c'
+
     def __init__(self, input_path: Path, output_path: Path, tokenizer: PreTrainedTokenizer,
                  max_length: int, parent_depth: int = 1, encode_class: bool = True, encode_id: bool = True,
                  encode_tag_subset: Optional[Iterable[str]] = None, split_attributes: bool = False,
@@ -29,7 +34,7 @@ class HtmlExtractor(BaseExtractor):
         parent_prefix = self.get_parent_prefix(elem.getparent(), depth=depth + 1)
 
         current_parent = [
-            f'parent{depth}tag {elem.tag}',
+            f'{self.parent_prefix}{depth}{self.tag_suffix} {elem.tag}',
         ]
 
         if self.encode_tag_subset is None or elem.tag in self.encode_tag_subset:
@@ -38,14 +43,14 @@ class HtmlExtractor(BaseExtractor):
                     parts = self.split_attribute_value(value)
                 else:
                     parts = [value]
-                current_parent.extend(f'parent{depth}id {part}' for part in parts)
+                current_parent.extend(f'{self.parent_prefix}{depth}{self.id_suffix} {part}' for part in parts)
 
             if (value := elem.get('class')) is not None and self.encode_class:
                 if self.split_attributes:
                     parts = self.split_attribute_value(value)
                 else:
                     parts = value.split()
-                current_parent.extend(f'parent{depth}class {part}' for part in parts)
+                current_parent.extend(f'{self.parent_prefix}{depth}{self.class_suffix} {part}' for part in parts)
 
         parent_prefix.extend(current_parent)
 
@@ -53,20 +58,22 @@ class HtmlExtractor(BaseExtractor):
 
     def feature_representation(self, elem: etree.Element) -> str:
         texts = []
-        tails = []
 
-        for el in elem.iter():
-            text = el.text and el.text.strip()
-            tail = el.tail and el.tail.strip()
+        for text in elem.xpath(".//text()"):
+            if not text.strip():
+                continue
 
-            if text:
-                prefix = ' '.join(self.get_parent_prefix(el))
-                texts.append(f'{prefix} {text}')
-            if tail:
-                prefix = ' '.join(self.get_parent_prefix(el.getparent()))
-                tails.insert(0, f'{prefix} {tail}')
+            if text.is_text:
+                # The text is contained within the 'parent' node
+                parent = text.getparent()
+            else:
+                # The text follows the 'parent' node, so the real parent is one level up
+                parent = text.getparent().getparent()
 
-        return ' '.join(texts + tails)
+            prefix = ' '.join(self.get_parent_prefix(parent))
+            texts.append(f'{prefix} {text.strip()}')
+
+        return ' '.join(texts)
 
     @staticmethod
     def split_attribute_value(value: str) -> List[str]:

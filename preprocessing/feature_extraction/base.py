@@ -29,6 +29,9 @@ DOMAINS = {
     'university': ['name', 'phone', 'website', 'type'],
 }
 
+# We need some extra tokens to encode the attribute type and special tokens
+EXTRA_TOKEN_SPACE = 10
+
 
 class BaseExtractor(ABC):
     output_format = '{split}/{vertical}/{website}/features-{max_length}.csv'
@@ -135,7 +138,7 @@ class BaseExtractor(ABC):
         if not representation:
             return []
 
-        if len(self.tokenizer.tokenize(representation)) >= self.max_length - 1:
+        if len(self.tokenizer.tokenize(representation)) > self.max_length - EXTRA_TOKEN_SPACE:
             if not len(elem):
                 # This element is too large to fit in the document, but cannot
                 # be split into sub-elements
@@ -149,20 +152,28 @@ class BaseExtractor(ABC):
 
             return features
 
-        result = {
-            'text': representation,
-        }
-
         normalized_text = normalize_answer(self.text_representation(elem))
 
-        for key, value in ground_truth.items():
-            # TODO: look at how webformer did this
-            if normalize_answer(value) in normalized_text:
-                result[key] = value
-            else:
-                result[key] = None
+        results = [{'text': representation}]
+        for attribute, possible_values in ground_truth.items():
+            found_values = []
+            for value in possible_values:
+                if value != '<NULL>' and normalize_answer(value) in normalized_text:
+                    found_values.append(value)
 
-        return [result]
+            if found_values:
+                results = [
+                    {**result, attribute: value}
+                    for value in found_values
+                    for result in results
+                ]
+            else:
+                results = [
+                    {**result, attribute: None}
+                    for result in results
+                ]
+
+        return results
 
     def read_ground_truth_file(self, vertical: str, website: str, attribute: str):
         filename = f'{vertical}-{website}-{attribute}.txt'
@@ -184,8 +195,7 @@ class BaseExtractor(ABC):
             sub_data = self.read_ground_truth_file(vertical, website, attribute)
 
             for key, values in sub_data.items():
-                # TODO: ensure multiple values are allowed
-                ground_truths[key][attribute] = values[0]
+                ground_truths[key][attribute] = values
 
         return ground_truths
 
@@ -193,5 +203,8 @@ class BaseExtractor(ABC):
     def clean_html(html: str) -> str:
         # https://stackoverflow.com/a/25920392
         html = re.sub(u'[^\u0020-\uD7FF\u0009\u000A\u000D\uE000-\uFFFD\U00010000-\U0010FFFF]+', '', html)
+
+        # lxml automatically converts HTML entities, which we do not want
+        html = html.replace('&', '&amp;')
 
         return html
