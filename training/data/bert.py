@@ -22,7 +22,9 @@ class BertDataset(BaseDataset):
         not_null_indices = []
         num_not_found = 0
         for index, (context, target) in enumerate(zip(self.inputs, self.targets)):
-            if not target:
+            normalized_target = normalize_answer(target)
+
+            if not normalized_target:
                 # Use -1 to indicate the value was not found
                 self.start_char_positions.append(-1)
                 self.end_char_positions.append(-1)
@@ -30,7 +32,6 @@ class BertDataset(BaseDataset):
 
             # We find the normalized answer in the normalized context, and then map that back to the original sequence
             normalized_context, char_mapping = normalize_with_mapping(context)
-            normalized_target = normalize_answer(target)
 
             try:
                 start_position = normalized_context.index(normalized_target)
