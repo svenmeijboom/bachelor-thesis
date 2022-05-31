@@ -1,4 +1,5 @@
 from collections import namedtuple
+import re
 from typing import List
 
 import torch
@@ -33,19 +34,13 @@ class BertDataset(BaseDataset):
             # We find the normalized answer in the normalized context, and then map that back to the original sequence
             normalized_context, char_mapping = normalize_with_mapping(context)
 
-            try:
-                start_position = normalized_context.index(normalized_target)
-                end_position = start_position + len(normalized_target) - 1
+            match = re.search(f'\\b{re.escape(normalized_target)}\\b', normalized_context)
 
-                start_position = char_mapping[start_position]
-                end_position = char_mapping[end_position]
-
-                self.start_char_positions.append(start_position)
-                self.end_char_positions.append(end_position)
-
+            if match is not None and 0 <= match.start() <= match.end() - 1 < len(char_mapping):
+                self.start_char_positions.append(char_mapping[match.start()])
+                self.end_char_positions.append(char_mapping[match.end() - 1])
                 not_null_indices.append(index)
-
-            except (ValueError, IndexError):
+            else:
                 # Use -1 to indicate the value was not found
                 self.start_char_positions.append(-1)
                 self.end_char_positions.append(-1)
