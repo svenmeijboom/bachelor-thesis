@@ -1,17 +1,17 @@
 run_name:
-  value: "{model}-{vertical}-{context_size}"
+  value: test-run-please-ignore
 representation:
-  value: text
+  value: html
 model:
   value: bert
 context_size:
   value: 256
 vertical:
-  value: book
+  value: nbaplayer
 remove_null:
   value: false
 monitor_metric:
-  value: em
+  value: "document/f1"
 learning_rate:
   value: 0.00005
 optimizer:
