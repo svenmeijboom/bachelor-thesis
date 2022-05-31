@@ -63,11 +63,11 @@ class T5Trainer(BaseTrainer):
             token_scores = torch.take_along_dim(stacked_scores, outputs.sequences[:, 1:, None], dim=2).squeeze()
 
             # Average the probabilities over each sequence to obtain score per sequence
-            token_mask = outputs.sequences[:, 1:].gt(1)
+            token_mask = outputs.sequences[:, 1:].ne(self.tokenizer.pad_token_id)
             sums = torch.where(token_mask, token_scores, 0.).sum(dim=1)
             lengths = token_mask.sum(dim=1)
 
-            scores = (sums / lengths).tolist()
+            scores = torch.nan_to_num(sums / lengths).tolist()
 
         predictions = self.tokenizer.batch_decode(outputs.sequences, skip_special_tokens=True)
 
