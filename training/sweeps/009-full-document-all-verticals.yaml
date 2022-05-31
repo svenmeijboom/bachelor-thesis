@@ -28,7 +28,7 @@ parameters:
   context_size:
     value: 256
   monitor_metric:
-    value: "instance/f1"
+    value: "document/f1"
   learning_rate:
     value: 0.00005
   optimizer:
