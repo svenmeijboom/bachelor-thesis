@@ -30,32 +30,42 @@ def normalize_with_mapping(s):
     Keeps track of mapping between characters in the normalized string and their positions in the original string.
     """
 
-    def replace_with_mapping(pattern, text, mapping):
+    def replace_with_mapping(text, mapping, pattern, replace=' '):
         regex = re.compile(pattern, re.UNICODE)
+        padding = [-1] * len(replace)
 
         new_mapping = []
-        new_text = ''
+        new_texts = []
 
         start = 0
         for match in regex.finditer(text):
             new_mapping.extend(mapping[start:match.start()])
-            new_mapping.append(-1)
-            new_text += text[start:match.start()] + ' '
+            new_mapping.extend(padding)
+
+            new_texts.append(text[start:match.start()])
+            new_texts.append(replace)
+
             start = match.end()
 
-        new_text += text[start:]
+        new_texts.append(text[start:])
         new_mapping.extend(mapping[start:])
 
-        return new_text, new_mapping
+        return ''.join(new_texts), new_mapping
 
     def remove_articles(text, mapping):
-        return replace_with_mapping(r"\b(a|an|the)\b", text, mapping)
+        return replace_with_mapping(text, mapping, r"\b(a|an|the)\b")
 
     def white_space_fix(text, mapping):
-        return replace_with_mapping(r"\s+", text, mapping)
+        text, mapping = replace_with_mapping(text, mapping, r"\s+")
+
+        left_stripped = text.lstrip()
+        right_stripped = left_stripped.rstrip()
+
+        start = len(text) - len(left_stripped)
+        return right_stripped, mapping[start:start+len(right_stripped)]
 
     def remove_punc(text, mapping):
-        return replace_with_mapping(r'[{}]+'.format(re.escape(string.punctuation)), text, mapping)
+        return replace_with_mapping(text, mapping, r'[{}]+'.format(re.escape(string.punctuation)))
 
     def lower(text, mapping):
         return text.lower(), mapping
