@@ -3,9 +3,6 @@ import re
 import string
 
 
-from unidecode import unidecode
-
-
 def normalize_answer(s):
     """Lower text and remove punctuation, articles, accents and extra whitespace."""
 
@@ -24,10 +21,7 @@ def normalize_answer(s):
     def lower(text):
         return text.lower()
 
-    def remove_accents(text):
-        return unidecode(text)
-
-    return remove_accents(white_space_fix(remove_articles(remove_punc(lower(s)))))
+    return white_space_fix(remove_articles(remove_punc(lower(s))))
 
 
 def normalize_with_mapping(s):
@@ -66,16 +60,12 @@ def normalize_with_mapping(s):
     def lower(text, mapping):
         return text.lower(), mapping
 
-    def remove_accents(text, mapping):
-        return unidecode(text), mapping
-
     char_mapping = list(range(len(s)))
 
     s, char_mapping = lower(s, char_mapping)
     s, char_mapping = remove_punc(s, char_mapping)
     s, char_mapping = remove_articles(s, char_mapping)
     s, char_mapping = white_space_fix(s, char_mapping)
-    s, char_mapping = remove_accents(s, char_mapping)
 
     return s, char_mapping
 
