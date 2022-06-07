@@ -1,8 +1,8 @@
 program: train.py
 method: grid
-name: full-document-all-verticals
+name: t5-full-document-more-steps
 project: information_extraction
-description: Runs the BERT and T5 models on each of the domains in the SWDE dataset and reports full document results
+description: Runs the T5 models for a longer amount of time on each of the domains in the SWDE dataset and reports full document results
 
 parameters:
   run_name:
