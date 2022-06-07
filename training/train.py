@@ -2,7 +2,7 @@ from pathlib import Path
 
 import wandb
 
-from callbacks import EarlyStopping, ModelCheckpoint, WandbCallback
+from callbacks import EarlyStopping, ModelCheckpoint, SavePredictions, WandbCallback
 from data.module import SWDEDataModule
 from metrics import compute_f1, compute_exact
 from trainer import BertTrainer, T5Trainer
@@ -65,6 +65,7 @@ def get_trainer(dataset: SWDEDataModule, run_name: str, config: wandb.Config):
         WandbCallback('information_extraction', run_name, do_init=False),
         EarlyStopping(patience=config.early_stopping_patience,
                       metric=config.monitor_metric, mode=monitor_mode),
+        SavePredictions(documents_dir=f'results/{run_name}', instances_dir=f'results/{run_name}'),
     ]
 
     trainer_kwargs = {
