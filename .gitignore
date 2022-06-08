@@ -9,3 +9,5 @@ wandb/
 
 _legacy_*.py
 *.csv
+
+geckodriver.log

@@ -17,6 +17,7 @@ pytorch-lightning = "^1.6.0"
 jupyterlab = "^3.3.3"
 wandb = "^0.12.15"
 matplotlib = "^3.5.2"
+selenium = "^4.2.0"
 
 [tool.poetry.dev-dependencies]
 
