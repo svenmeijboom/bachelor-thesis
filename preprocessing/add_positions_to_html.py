@@ -1,4 +1,4 @@
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from multiprocessing import Process, Queue
 import os
 from pathlib import Path
 import shutil
@@ -11,6 +11,79 @@ import wandb
 
 NUM_WORKERS = 32
 TIMEOUT = 15
+
+
+class SeleniumProcess(Process):
+    def __init__(self, task_queue: Queue, stat_queue: Queue, input_dir: Path, output_dir: Path):
+        super().__init__()
+
+        self.task_queue = task_queue
+        self.stat_queue = stat_queue
+        self.input_dir = input_dir
+        self.output_dir = output_dir
+
+    def run(self) -> None:
+        options = webdriver.FirefoxOptions()
+        options.headless = True
+        options.set_capability('pageLoadStrategy', 'eager')
+        options.set_preference('javascript.enabled', False)
+
+        with webdriver.Firefox(options=options) as driver:
+            driver.set_page_load_timeout(TIMEOUT)
+
+            while True:
+                next_task = self.task_queue.get()
+
+                if next_task is None:
+                    break
+
+                try:
+                    self.process_file(driver, next_task)
+                    self.stat_queue.put('success')
+                except Exception as e:
+                    self.stat_queue.put(f'Error for {next_task}: {e}')
+
+            return
+
+    def process_file(self, driver: webdriver.Firefox, filename: str):
+        output_file = self.output_dir / filename
+        if output_file.exists():
+            return
+
+        url = 'file://' + str((self.input_dir / filename).absolute())
+
+        try:
+            driver.get(url)
+        except:
+            pass
+
+        for element in driver.find_elements(By.TAG_NAME, '*'):
+            position_information = {**element.location, **element.size}
+
+            for key, value in position_information.items():
+                # Add data-x, data-y, etc. to the DOM tree
+                driver.execute_script('arguments[0].setAttribute(arguments[1],arguments[2])', element, f'data-{key}',
+                                      value)
+
+        html = driver.execute_script('return document.documentElement.outerHTML')
+
+        output_file.parent.mkdir(exist_ok=True, parents=True)
+
+        with open(output_file, 'w') as _file:
+            _file.write(html)
+
+
+def status_bar(stat_queue: Queue, total: int):
+    encountered = 0
+
+    with tqdm(desc='File', total=total) as pbar:
+        while encountered < total:
+            message = stat_queue.get()
+            pbar.update(1)
+            encountered += 1
+
+            if message != 'success':
+                pbar.write(message)
 
 
 def process_file(input_dir: Path, output_dir: Path, filename: str):
@@ -51,7 +124,7 @@ def process_file(input_dir: Path, output_dir: Path, filename: str):
 def main():
     wandb.init(
         project='information_extraction',
-        name='random-split',
+        name='add-pos-to-swde',
         job_type='preprocess',
     )
 
@@ -60,8 +133,8 @@ def main():
     input_dir = Path(dataset_artifact.download(root=os.path.expanduser('~/Data/SWDE/')))
     output_dir = Path('~/Data/SWDE-pos/').expanduser()
 
-    target_filenames = []
-    num_existing = 0
+    task_queue = Queue()
+    total = 0
 
     for parent_dir, _, filenames in os.walk(input_dir):
         parent_path = Path(parent_dir)
@@ -69,30 +142,23 @@ def main():
             if filename.endswith('.htm'):
                 file_path = (parent_path / filename).relative_to(input_dir)
 
-                if (output_dir / file_path).exists():
-                    num_existing += 1
-                else:
-                    target_filenames.append(file_path)
+                if not (output_dir / file_path).exists():
+                    task_queue.put(str(file_path))
+                    total += 1
 
-    with tqdm(desc=f'File', total=len(target_filenames) + num_existing, initial=num_existing, smoothing=0) as pbar:
-        with ProcessPoolExecutor(max_workers=NUM_WORKERS) as executor:
-            futures_to_filenames = {}
-            for filename in target_filenames:
-                future = executor.submit(
-                    process_file,
-                    input_dir,
-                    output_dir,
-                    filename,
-                )
-                future.add_done_callback(lambda _: pbar.update())
-                futures_to_filenames[future] = filename
+    for _ in range(NUM_WORKERS):
+        task_queue.put(None)
 
-            for future in as_completed(futures_to_filenames):
-                filename = futures_to_filenames[future]
-                try:
-                    future.result()
-                except Exception as e:
-                    tqdm.write(f'Exception for {filename}: {e}')
+    stat_queue = Queue()
+
+    processes = [SeleniumProcess(task_queue, stat_queue, input_dir, output_dir) for _ in range(NUM_WORKERS)]
+    processes.append(Process(target=status_bar, args=(stat_queue, total)))
+
+    for process in processes:
+        process.start()
+
+    for process in processes:
+        process.join()
 
     shutil.copytree(input_dir / 'groundtruth', output_dir / 'groundtruth', dirs_exist_ok=True)
 
