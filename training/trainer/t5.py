@@ -1,6 +1,7 @@
+import math
 from typing import Iterable, Tuple
 
-from transformers import T5Tokenizer, T5ForConditionalGeneration
+from transformers import T5Tokenizer, T5ForConditionalGeneration, LogitsProcessor, LogitsProcessorList
 
 import torch
 from torch.nn import functional as F
@@ -55,7 +56,11 @@ class T5Trainer(BaseTrainer):
             else:
                 loss = -1
 
+            logits_processor = CopyInputLogitsProcessor(batch.input_ids.to(self.device), self.tokenizer.eos_token_id)
+            logits_processor_list = LogitsProcessorList([logits_processor])
+
             outputs = self.model.generate(batch.input_ids.to(self.device),
+                                          logits_processor=logits_processor_list,
                                           return_dict_in_generate=True, output_scores=True)
 
             # Compute the probability of each token in the decoded sequences
@@ -72,3 +77,34 @@ class T5Trainer(BaseTrainer):
         predictions = self.tokenizer.batch_decode(outputs.sequences, skip_special_tokens=True)
 
         return loss, predictions, scores
+
+
+class CopyInputLogitsProcessor(LogitsProcessor):
+    r"""
+    :class:`transformers.LogitsProcessor` that constrains generation to sequences that exist in the input sequence
+    Args:
+        original_input_ids: (:obj:`torch.Tensor`):
+            The tokenized input sequence for this batch, from which the generation must copy.
+        eos_token: (:obj:`int`):
+            The token ID of the EOS token, to ensure this is not masked away.
+    """
+
+    def __init__(self, original_input_ids: torch.Tensor, eos_token: int):
+        self.original_input_ids = original_input_ids
+        self.eos_token = eos_token
+
+    def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
+        mask = torch.full_like(scores, -math.inf)
+        mask[:, self.eos_token] = 0
+
+        # Strip the starting pad token
+        input_ids = input_ids[:, 1:]
+
+        possible_sequences = self.original_input_ids.unfold(1, input_ids.shape[1] + 1, 1)
+        allowed_sequences = (possible_sequences[:, :, :input_ids.shape[1]] == input_ids[:, None, :]).all(axis=-1)
+
+        for batch_id in range(allowed_sequences.shape[0]):
+            allowed_tokens = possible_sequences[batch_id][allowed_sequences[batch_id]][:, -1]
+            mask[batch_id, allowed_tokens] = 0
+
+        return scores + mask
