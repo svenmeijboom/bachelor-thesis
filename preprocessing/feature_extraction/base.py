@@ -154,11 +154,19 @@ class BaseExtractor(ABC):
 
         normalized_text = normalize_answer(self.text_representation(elem))
 
-        results = [{'text': representation}]
+        results = [{
+            'text':   representation,
+            'x':      elem.get('data-x'),
+            'y':      elem.get('data-y'),
+            'width':  elem.get('data-width'),
+            'height': elem.get('data-height'),
+        }]
         for attribute, possible_values in ground_truth.items():
             found_values = []
             for value in possible_values:
-                if value != '<NULL>' and normalize_answer(value) in normalized_text:
+                pattern = re.compile(f'\\b{re.escape(normalize_answer(value))}\\b')
+
+                if value != '<NULL>' and pattern.search(normalized_text):
                     found_values.append(value)
 
             if found_values:

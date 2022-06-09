@@ -11,7 +11,7 @@ TRAIN_SIZE = 0.6
 VAL_SIZE = 0.2
 TEST_SIZE = 0.2
 
-NAME = 'train-val-test-split'
+NAME = 'zero-shot-split'
 
 
 def normalize_name(name: str):
@@ -27,9 +27,9 @@ def main():
             job_type='preprocess',
         )
 
-        dataset_artifact = wandb.use_artifact('swde:latest')
+        dataset_artifact = wandb.use_artifact('swde-pos:latest')
 
-        dataset_base = Path(dataset_artifact.download(root=os.path.expanduser('~/Data/SWDE/')))
+        dataset_base = Path(dataset_artifact.download(root=os.path.expanduser('~/Data/SWDE-pos/')))
         split_base = Path(tmpdir)
 
         for vertical in os.listdir(dataset_base):
@@ -57,8 +57,8 @@ def main():
 
         shutil.copytree(dataset_base / 'groundtruth', split_base / 'groundtruth')
 
-        artifact = wandb.Artifact(NAME, type=NAME,
-                                  description='Train / val / test split of the SWDE dataset',
+        artifact = wandb.Artifact(NAME, type='train-val-test-split',
+                                  description='Zero shot train / val / test split of the SWDE dataset',
                                   metadata={'train size': TRAIN_SIZE, 'val size': VAL_SIZE, 'test size': TEST_SIZE})
         artifact.add_dir(str(split_base))
 

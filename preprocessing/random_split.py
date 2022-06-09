@@ -27,9 +27,9 @@ def main():
             job_type='preprocess',
         )
 
-        dataset_artifact = wandb.use_artifact('swde:latest')
+        dataset_artifact = wandb.use_artifact('swde-pos:latest')
 
-        dataset_base = Path(dataset_artifact.download(root=os.path.expanduser('~/Data/SWDE/')))
+        dataset_base = Path(dataset_artifact.download(root=os.path.expanduser('~/Data/SWDE-pos/')))
         split_base = Path(tmpdir)
 
         for vertical in os.listdir(dataset_base):
