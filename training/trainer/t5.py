@@ -1,5 +1,5 @@
 import math
-from typing import Iterable, Tuple
+from typing import Iterable, Optional, Tuple
 
 from transformers import T5Tokenizer, T5ForConditionalGeneration, LogitsProcessor, LogitsProcessorList
 
@@ -54,25 +54,20 @@ class T5Trainer(BaseTrainer):
             if any(batch.targets):
                 loss = float(self.train_step(batch))
             else:
-                loss = -1
+                # We cannot compute the loss over a fully empty batch, so just set it to 0
+                loss = 0
 
-            logits_processor = CopyInputLogitsProcessor(batch.input_ids.to(self.device), self.tokenizer.eos_token_id)
+            logits_processor = CopyInputLogitsProcessor(batch.input_ids.to(self.device), self.tokenizer.eos_token_id,
+                                                        num_beams=self.model_kwargs.get('num_beams'))
             logits_processor_list = LogitsProcessorList([logits_processor])
 
             outputs = self.model.generate(batch.input_ids.to(self.device),
+                                          num_beams=self.model_kwargs.get('num_beams'),
                                           logits_processor=logits_processor_list,
                                           return_dict_in_generate=True, output_scores=True)
 
             # Compute the probability of each token in the decoded sequences
-            stacked_scores = F.softmax(torch.stack(outputs.scores).permute(1, 0, 2), dim=2).double()
-            token_scores = torch.take_along_dim(stacked_scores, outputs.sequences[:, 1:, None], dim=2).squeeze()
-
-            # Average the probabilities over each sequence to obtain score per sequence
-            token_mask = outputs.sequences[:, 1:].ne(self.tokenizer.pad_token_id)
-            sums = torch.where(token_mask, token_scores, 0.).sum(dim=1)
-            lengths = token_mask.sum(dim=1)
-
-            scores = torch.nan_to_num(sums / lengths).tolist()
+            scores = outputs.sequences_scores.tolist()
 
         predictions = self.tokenizer.batch_decode(outputs.sequences, skip_special_tokens=True)
 
@@ -89,9 +84,13 @@ class CopyInputLogitsProcessor(LogitsProcessor):
             The token ID of the EOS token, to ensure this is not masked away.
     """
 
-    def __init__(self, original_input_ids: torch.Tensor, eos_token: int):
+    def __init__(self, original_input_ids: torch.Tensor, eos_token: int, num_beams: Optional[int] = None):
         self.original_input_ids = original_input_ids
         self.eos_token = eos_token
+        self.num_beams = num_beams
+
+        if num_beams is not None:
+            self.original_input_ids = torch.repeat_interleave(original_input_ids, num_beams, dim=0)
 
     def __call__(self, input_ids: torch.LongTensor, scores: torch.FloatTensor) -> torch.FloatTensor:
         mask = torch.full_like(scores, -math.inf)

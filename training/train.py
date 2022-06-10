@@ -79,6 +79,7 @@ def get_trainer(dataset: SWDEDataModule, run_name: str, config: wandb.Config):
         'learning_rate': config.learning_rate,
         'optimizer': config.optimizer,
         'callbacks': callbacks,
+        'num_beams': config.get('num_beams'),
     }
 
     model_config = MODELS[config.model]

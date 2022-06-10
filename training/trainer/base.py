@@ -34,6 +34,7 @@ class BaseTrainer(ABC):
         learning_rate: Optional[float] = 5e-5,
         optimizer: str = 'adamw',
         callbacks: Optional[List[BaseCallback]] = None,
+        **kwargs,
     ):
         self.model = model
         self.tokenizer = tokenizer
@@ -45,8 +46,9 @@ class BaseTrainer(ABC):
         self.learning_rate = learning_rate
         self.optimizer_name = optimizer
         self.callbacks = callbacks or []
-        self.is_training = False
+        self.model_kwargs = kwargs
 
+        self.is_training = False
         self.do_validate = self.validate_per_steps > 0
         self.model.to(self.device)
 
