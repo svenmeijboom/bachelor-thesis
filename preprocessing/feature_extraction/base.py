@@ -35,6 +35,7 @@ EXTRA_TOKEN_SPACE = 10
 
 class BaseExtractor(ABC):
     output_format = '{split}/{vertical}/{website}/features-{max_length}.csv'
+    position_attributes = {'x', 'y', 'width', 'height'}
 
     def __init__(self, input_path: Path, output_path: Path, tokenizer: PreTrainedTokenizer,
                  max_length: int, domains: Optional[dict] = None, num_workers: int = 1):
@@ -127,7 +128,8 @@ class BaseExtractor(ABC):
 
         tree = lxml.html.parse(StringIO(cleaned_html))
 
-        cleaner = Cleaner(style=True)
+        safe_attrs = Cleaner.safe_attrs | {f'data-{attr}' for attr in self.position_attributes}
+        cleaner = Cleaner(style=True, safe_attrs=safe_attrs)
         cleaned_tree = cleaner.clean_html(tree.find('body'))
 
         return self.extract_features(cleaned_tree, ground_truth)
@@ -155,11 +157,11 @@ class BaseExtractor(ABC):
         normalized_text = normalize_answer(self.text_representation(elem))
 
         results = [{
-            'text':   representation,
-            'x':      elem.get('data-x'),
-            'y':      elem.get('data-y'),
-            'width':  elem.get('data-width'),
-            'height': elem.get('data-height'),
+            'text': representation,
+            **{
+                attr: elem.get(f'data-{attr}')
+                for attr in self.position_attributes
+            },
         }]
         for attribute, possible_values in ground_truth.items():
             found_values = []
