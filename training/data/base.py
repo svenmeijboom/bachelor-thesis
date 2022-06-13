@@ -56,7 +56,7 @@ class BaseDataset(Dataset, ABC):
     def read_csv(self, file: Path) -> Iterator[Tuple[str, ...]]:
         df = pd.read_csv(file, dtype=str).fillna('')
 
-        features = [col for col in df.columns if col not in ('doc_id', 'text')]
+        features = [col for col in df.columns if col not in ('doc_id', 'text') and not col.startswith('pos/')]
 
         for _, row in df.iterrows():
             for feature in features:

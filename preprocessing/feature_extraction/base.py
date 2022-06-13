@@ -129,10 +129,12 @@ class BaseExtractor(ABC):
         tree = lxml.html.parse(StringIO(cleaned_html))
 
         safe_attrs = Cleaner.safe_attrs | {f'data-{attr}' for attr in self.position_attributes}
-        cleaner = Cleaner(style=True, safe_attrs=safe_attrs)
-        cleaned_tree = cleaner.clean_html(tree.find('body'))
+        cleaner = Cleaner(style=True, page_structure=False, safe_attrs=safe_attrs)
 
-        return self.extract_features(cleaned_tree, ground_truth)
+        cleaned_head = cleaner.clean_html(tree.find('head'))
+        cleaned_body = cleaner.clean_html(tree.find('body'))
+
+        return self.extract_features(cleaned_head, ground_truth) + self.extract_features(cleaned_body, ground_truth)
 
     def extract_features(self, elem: etree.Element, ground_truth: dict) -> List[dict]:
         representation = self.feature_representation(elem).strip()
@@ -159,7 +161,7 @@ class BaseExtractor(ABC):
         results = [{
             'text': representation,
             **{
-                attr: elem.get(f'data-{attr}')
+                f'pos/{attr}': elem.get(f'data-{attr}')
                 for attr in self.position_attributes
             },
         }]
