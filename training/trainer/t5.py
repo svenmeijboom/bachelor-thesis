@@ -4,10 +4,11 @@ from typing import Iterable, Optional, Tuple
 from transformers import T5Tokenizer, T5ForConditionalGeneration, LogitsProcessor, LogitsProcessorList
 
 import torch
-from torch.nn import functional as F
 from torch.nn import CrossEntropyLoss
+from torch.utils.data import DataLoader
 
 from data.t5 import T5Batch
+from outputs import SegmentPrediction
 from trainer.base import BaseTrainer
 
 
@@ -49,7 +50,7 @@ class T5Trainer(BaseTrainer):
 
         return loss
 
-    def evaluate_step(self, batch: T5Batch) -> Tuple[float, Iterable[str], Iterable[float]]:
+    def predict_segment_batch(self, batch: T5Batch) -> Tuple[float, SegmentPrediction]:
         with torch.no_grad():
             if any(batch.targets):
                 loss = float(self.train_step(batch))
@@ -71,7 +72,7 @@ class T5Trainer(BaseTrainer):
 
         predictions = self.tokenizer.batch_decode(outputs.sequences, skip_special_tokens=True)
 
-        return loss, predictions, scores
+        return loss, SegmentPrediction(batch, predictions, scores, None)
 
 
 class CopyInputLogitsProcessor(LogitsProcessor):
