@@ -1,15 +1,14 @@
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import Iterable, List, Optional, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 from tqdm import tqdm
 
-from transformers import PreTrainedTokenizer
-from transformers import logging
+from transformers import get_linear_schedule_with_warmup, logging, PreTrainedTokenizer
 
 import torch
-from torch.nn import Module
+from torch import nn
 from torch.utils.data import DataLoader
 
 
@@ -21,10 +20,13 @@ logging.set_verbosity_error()
 
 class BaseTrainer(ABC):
     architecture = ''
+    optimizers = {
+        'adamw': torch.optim.AdamW
+    }
 
     def __init__(
         self,
-        model: Module,
+        model: nn.Module,
         tokenizer: PreTrainedTokenizer,
         train_loader: Optional[DataLoader] = None,
         device: Optional[str] = None,
@@ -38,20 +40,14 @@ class BaseTrainer(ABC):
         self.train_loader = train_loader
         self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
         self.learning_rate = learning_rate
-        self.optimizer_name = optimizer
+        self.optimizer = optimizer
         self.callbacks = callbacks or []
         self.model_kwargs = kwargs
 
         self.is_training = False
         self.model.to(self.device)
 
-        optimizers = {
-            'adamw': torch.optim.AdamW
-        }
-
-        self.optimizer = optimizers[self.optimizer_name](self.model.parameters(), lr=self.learning_rate)
-
-    def train(self, num_steps: int, batch_size: int):
+    def train(self, num_steps: int, batch_size: int, warmup_steps: int = 0):
         if self.train_loader is None:
             raise ValueError('`train_loader` must be provided if model needs training')
 
@@ -65,12 +61,15 @@ class BaseTrainer(ABC):
 
         grad_accumulation_steps = batch_size // mini_batch_size
 
+        optimizer = self.optimizers[self.optimizer](self.model.parameters(), lr=self.learning_rate)
+        scheduler = get_linear_schedule_with_warmup(optimizer, warmup_steps, num_steps)
+
         self.on_train_start({
             'num_steps': num_steps,
             'batch_size': batch_size,
             'architecture': self.architecture,
             'learning_rate': self.learning_rate,
-            'optimizer': self.optimizer_name,
+            'optimizer': self.optimizer,
         })
 
         data_iterator = iter(self.train_loader)
@@ -88,8 +87,11 @@ class BaseTrainer(ABC):
 
                 losses.append(float(loss))
 
-            self.optimizer.step()
-            self.optimizer.zero_grad()
+            # Clip gradients to prevent exploding gradients
+            nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
+            optimizer.step()
+            optimizer.zero_grad()
+            scheduler.step()
 
             pbar.update()
             pbar.set_postfix({'loss': np.mean(losses)})
@@ -102,23 +104,6 @@ class BaseTrainer(ABC):
                 break
 
         self.on_train_end()
-
-    def on_train_start(self, run_params: dict):
-        print(f'Training {self.model.__class__.__name__} for {run_params["num_steps"]} steps on device `{self.device}`')
-        self.is_training = True
-        self.optimizer.zero_grad()
-
-        for callback in self.callbacks:
-            callback.on_train_start(run_params)
-
-    def on_train_end(self):
-        self.is_training = False
-        for callback in self.callbacks:
-            callback.on_train_end()
-
-    def on_step_end(self, step_num, loss):
-        for callback in self.callbacks:
-            callback.on_step_end(step_num, loss)
 
     @abstractmethod
     def train_step(self, batch):
@@ -179,6 +164,22 @@ class BaseTrainer(ABC):
             'prediction': prediction,
             'confidence': score,
         }
+
+    def on_train_start(self, run_params: dict):
+        print(f'Training {self.model.__class__.__name__} for {run_params["num_steps"]} steps on device `{self.device}`')
+        self.is_training = True
+
+        for callback in self.callbacks:
+            callback.on_train_start(run_params)
+
+    def on_train_end(self):
+        self.is_training = False
+        for callback in self.callbacks:
+            callback.on_train_end()
+
+    def on_step_end(self, step_num, loss):
+        for callback in self.callbacks:
+            callback.on_step_end(step_num, loss)
 
     def stop(self):
         self.is_training = False

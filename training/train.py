@@ -114,10 +114,10 @@ def main():
     dataset = get_dataset(config)
 
     with get_trainer(dataset, run_name, config) as trainer:
-        trainer.train(config.num_steps, config.batch_size)
+        trainer.train(config.num_steps, config.batch_size, warmup_steps=config.get('warmup_steps', 0))
 
         eval_loaders = {
-            'train': lambda: dataset.train_document_dataloader(num_documents=10000),
+            'train': lambda: dataset.train_document_dataloader(num_documents=len(set(dataset.data_val.docs))),
             'val': lambda: dataset.val_document_dataloader(),
             'test': lambda: dataset.test_document_dataloader(),
         }

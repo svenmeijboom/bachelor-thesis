@@ -13,7 +13,7 @@ class ValidationCallback(BaseCallback):
         evaluator: Evaluator,
         validation_interval: int,
         segment_loader: Optional[DataLoader] = None,
-        document_loader: Optional[Iterable[Tuple[str, Iterable[Tuple[str, DataLoader]]]]] = None,
+        document_loader: Optional[DataLoader] = None,
         label: Optional[str] = None,
     ):
         self.evaluator = evaluator
