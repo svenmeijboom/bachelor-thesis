@@ -91,7 +91,8 @@ def get_trainer(dataset: SWDEDataModule, run_name: str, config: wandb.Config):
 
     callbacks = [
         ModelCheckpoint(f'models/{run_name}.state_dict', restore=True,
-                        metric=config.monitor_metric, mode=monitor_mode),
+                        metric=config.monitor_metric, mode=monitor_mode,
+                        revert_after=config.get('revert_after')),
         WandbCallback('information_extraction', run_name, do_init=False),
         EarlyStopping(patience=config.early_stopping_patience,
                       metric=config.monitor_metric, mode=monitor_mode),

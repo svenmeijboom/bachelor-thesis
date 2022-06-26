@@ -1,5 +1,5 @@
 import os
-from typing import Dict
+from typing import Optional
 
 import torch
 from tqdm import tqdm
@@ -9,11 +9,13 @@ from outputs import EvaluationResult
 
 
 class ModelCheckpoint(BaseCallback):
-    def __init__(self, filename: str, metric: str = 'loss', mode: str = 'min', restore: bool = False):
+    def __init__(self, filename: str, metric: str = 'loss', mode: str = 'min', restore: bool = False,
+                 revert_after: Optional[int] = None):
         self.filename = filename
         self.metric = metric
         self.mode = mode
         self.restore = restore
+        self.revert_after = revert_after
 
         if mode not in ('min', 'max'):
             raise ValueError('`mode` must be one of ("min", "max")')
@@ -22,6 +24,7 @@ class ModelCheckpoint(BaseCallback):
         os.makedirs(dirname, exist_ok=True)
 
         self.best_score = None
+        self.steps_since_improve = 0
 
     def on_validation_end(self, step_num: int, results: EvaluationResult):
         new_score = results.metrics[self.metric]
@@ -33,6 +36,15 @@ class ModelCheckpoint(BaseCallback):
 
             self.best_score = new_score
             torch.save(self.trainer.model.state_dict(), self.filename)
+
+            self.steps_since_improve = 0
+        else:
+            self.steps_since_improve += 1
+
+            if self.revert_after is not None and self.steps_since_improve >= self.revert_after:
+                tqdm.write(f'Reverting checkpoint: {self.metric} did not improve for {self.revert_after} steps...')
+                self.trainer.model.load_state_dict(torch.load(self.filename))
+                self.steps_since_improve = 0
 
     def on_train_end(self):
         if self.restore:
