@@ -88,6 +88,10 @@ class BertTrainer(BaseTrainer):
         end_probs = F.softmax(end_logits, dim=-1)
         scores = torch.triu(start_probs[:, :, None] * end_probs[:, None, :])
 
+        # Ensure it cannot predict a non-empty span starting with the CLS token
+        scores[:, 0, 1:] = 0
+        scores[:, 1:, 0] = 0
+
         max_scores, indices = torch.max(scores.view(scores.shape[0], -1), dim=-1)
         indices = torch.stack([torch.div(indices, scores.shape[-1], rounding_mode='floor'),
                                indices % scores.shape[-1]], dim=1)
