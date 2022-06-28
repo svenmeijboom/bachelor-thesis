@@ -11,15 +11,17 @@ from sklearn.model_selection import train_test_split
 
 from transformers import T5Tokenizer
 
-from callbacks import EarlyStopping, ModelCheckpoint, WandbCallback
 from data.module import SWDEDataModule
-from metrics import compute_f1, compute_exact, em_metric, f1_metric
+from data.ground_truths import GroundTruths
+from evaluation import Evaluator
+from metrics import compute_f1, compute_exact
 from trainer import BertTrainer, T5Trainer
+from train import get_trainer, perform_evaluation
 
 sys.path.append('../preprocessing')
 
 from feature_extraction.text import TextExtractor
-from feature_extraction.html import HtmlExtractor
+from feature_extraction.html import HtmlExtractor, SimpleHtmlExtractor
 
 
 Config = namedtuple('Config', ['encode_id', 'encode_class', 'encode_tag_subset', 'split_attributes'])
@@ -40,13 +42,7 @@ configs = {
 }
 
 
-def main():
-    wandb.init(job_type='experiment')
-
-    config = wandb.config
-
-    wandb.run.name = config.representation
-
+def get_dataset(config: wandb.Config):
     data_path = Path('~/Data/SWDE-split').expanduser()
     input_artifact = wandb.use_artifact('train-val-test-split:latest')
     input_artifact.download(str(data_path))
@@ -59,6 +55,9 @@ def main():
         if config.representation == 'text':
             extractor = TextExtractor(data_path, output_path, tokenizer,
                                       max_length=config.context_size, num_workers=config.num_workers)
+        elif config.representation == 'html-simple':
+            extractor = SimpleHtmlExtractor(data_path, output_path, tokenizer,
+                                            max_length=config.context_size, num_workers=config.num_workers)
         else:
             extractor_config = configs[config.representation]
             extractor = HtmlExtractor(data_path, output_path, tokenizer,
@@ -107,40 +106,23 @@ def main():
                                  num_workers=config.num_workers,
                                  remove_null=config.remove_null)
 
-        monitor_mode = 'min' if config.monitor_metric == 'loss' else 'max'
+    return dataset
 
-        callbacks = [
-            ModelCheckpoint(f'models/{config.representation}.state_dict', restore=True,
-                            metric=config.monitor_metric, mode=monitor_mode),
-            WandbCallback('information_extraction', config.representation, do_init=False),
-            EarlyStopping(patience=config.early_stopping_patience,
-                          metric=config.monitor_metric, mode=monitor_mode),
-        ]
 
-        trainer_kwargs = {
-            'train_loader': dataset.train_dataloader(),
-            'val_loader': dataset.val_dataloader(size=config.validation_batches * config.batch_size),
-            'validate_per_steps': config.validation_interval,
-            'metrics': {
-                'f1': f1_metric,
-                'em': em_metric,
-            },
-            'instance_metrics': {
-                'f1': compute_f1,
-                'em': compute_exact,
-            },
-            'learning_rate': config.learning_rate,
-            'optimizer': config.optimizer,
-            'callbacks': callbacks,
-        }
+def main():
+    wandb.init(job_type='experiment')
 
-        with model_config['trainer_class'](model_config['model_version'], **trainer_kwargs) as trainer:
-            trainer.train(config.num_steps, config.batch_size)
-            trainer.perform_evaluation(
-                train=dataset.train_dataloader(sample=False),
-                val=dataset.val_dataloader(),
-                test=dataset.test_dataloader(),
-            )
+    config = wandb.config
+
+    run_name = config.run_name.format(**dict(config))
+    wandb.run.name = run_name
+
+    dataset = get_dataset(config)
+
+    with get_trainer(dataset, run_name, config) as trainer:
+        trainer.train(config.num_steps, config.batch_size, warmup_steps=config.get('warmup_steps', 0))
+
+        perform_evaluation(trainer, dataset, config)
 
     wandb.finish()
 

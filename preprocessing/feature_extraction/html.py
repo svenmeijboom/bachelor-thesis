@@ -8,6 +8,37 @@ from transformers import PreTrainedTokenizer
 from feature_extraction.base import BaseExtractor
 
 
+class SimpleHtmlExtractor(BaseExtractor):
+
+    def get_representation_parts(self, elem: etree.Element, top_level: bool = False) -> List[str]:
+        if elem is None:
+            return []
+
+        result = [f'<{elem.tag}>']
+
+        if (value := elem.get('id')) is not None:
+            result.append(f'id={value.strip()}')
+
+        if (values := elem.get('class')) is not None:
+            result.extend(f'class={value.strip()}' for value in values.split())
+
+        if elem.text is not None:
+            result.append(elem.text.strip())
+
+        for child in elem:
+            result.extend(self.get_representation_parts(child))
+
+        if elem.tail is not None and not top_level:
+            result.append(elem.tail.strip())
+
+        result.append(f'</{elem.tag}>')
+
+        return result
+
+    def feature_representation(self, elem: etree.Element) -> str:
+        return ' '.join(self.get_representation_parts(elem, top_level=True))
+
+
 class HtmlExtractor(BaseExtractor):
     parent_prefix = 'p'
     tag_suffix = 't'

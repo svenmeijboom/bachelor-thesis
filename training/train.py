@@ -8,7 +8,7 @@ from data.ground_truths import GroundTruths
 from data.module import SWDEDataModule
 from evaluation import Evaluator
 from metrics import compute_f1, compute_exact
-from trainer import BertTrainer, T5Trainer
+from trainer import BaseTrainer, BertTrainer, T5Trainer
 
 
 MODELS = {
@@ -86,7 +86,7 @@ def get_dataset(config: wandb.Config) -> SWDEDataModule:
     return dataset
 
 
-def get_trainer(dataset: SWDEDataModule, run_name: str, config: wandb.Config):
+def get_trainer(dataset: SWDEDataModule, run_name: str, config: wandb.Config) -> BaseTrainer:
     monitor_mode = 'min' if config.monitor_metric == 'loss' else 'max'
 
     callbacks = [
@@ -131,6 +131,25 @@ def get_trainer(dataset: SWDEDataModule, run_name: str, config: wandb.Config):
     return trainer
 
 
+def perform_evaluation(trainer: BaseTrainer, dataset: SWDEDataModule, config: wandb.Config):
+    eval_loaders = {
+        'train': lambda: dataset.train_document_dataloader(num_documents=len(set(dataset.data_val.docs))),
+        'val': lambda: dataset.val_document_dataloader(),
+        'test': lambda: dataset.test_document_dataloader(),
+    }
+
+    ground_truths = GroundTruths(Path('~/Data/SWDE/groundtruth/').expanduser())
+    evaluator = Evaluator(trainer, metrics={'f1': compute_f1, 'em': compute_exact}, ground_truths=ground_truths)
+
+    for split in config.get('evaluation_datasets', ['train', 'val', 'test']):
+        results = evaluator.evaluate_documents(eval_loaders[split](),
+                                               method=config.get('evaluation_method', 'greedy'),
+                                               label=f'Evaluating {split}')
+
+        for callback in trainer.callbacks:
+            callback.on_evaluation_end(split, results)
+
+
 def main():
     wandb.init(job_type='train')
 
@@ -144,22 +163,7 @@ def main():
     with get_trainer(dataset, run_name, config) as trainer:
         trainer.train(config.num_steps, config.batch_size, warmup_steps=config.get('warmup_steps', 0))
 
-        eval_loaders = {
-            'train': lambda: dataset.train_document_dataloader(num_documents=len(set(dataset.data_val.docs))),
-            'val': lambda: dataset.val_document_dataloader(),
-            'test': lambda: dataset.test_document_dataloader(),
-        }
-
-        ground_truths = GroundTruths(Path('~/Data/SWDE/groundtruth/').expanduser())
-        evaluator = Evaluator(trainer, metrics={'f1': compute_f1, 'em': compute_exact}, ground_truths=ground_truths)
-
-        for split in config.get('evaluation_datasets', ['train', 'val', 'test']):
-            results = evaluator.evaluate_documents(eval_loaders[split](),
-                                                   method=config.get('evaluation_method', 'greedy'),
-                                                   label=f'Evaluating {split}')
-
-            for callback in trainer.callbacks:
-                callback.on_evaluation_end(split, results)
+        perform_evaluation(trainer, dataset, config)
 
     wandb.finish()
 

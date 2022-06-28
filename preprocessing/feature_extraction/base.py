@@ -62,7 +62,7 @@ class BaseExtractor(ABC):
                 for website in os.listdir(self.input_path / split / vertical):
                     self.process_directory(split, vertical, website)
 
-    def process_directory(self, split: str, vertical: str, website: str) -> None:
+    def process_directory(self, split: str, vertical: str, website: str) -> Path:
         ground_truths = self.get_ground_truths(vertical, website)
 
         base_dir = self.input_path / split / vertical / website
@@ -119,6 +119,8 @@ class BaseExtractor(ABC):
             print(f'Warning: {vertical}-{website} has {self.num_too_large}/{num_total} '
                   f'({self.num_too_large / num_total * 100:.2f}%) unsplittable texts that are '
                   f'longer than {self.max_length} tokens')
+
+        return destination
 
     def get_features_from_file(self, filename: str, ground_truth: dict) -> List[dict]:
         with open(filename) as _file:
