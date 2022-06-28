@@ -1,0 +1,45 @@
+program: train.py
+method: grid
+name: bert-more-html
+project: information_extraction
+description: Runs the BERT models on the preprocessed data with the encoded information for 5 parents and HTML head
+
+parameters:
+  run_name:
+    value: "{model}-more-html-{vertical}-{context_size}"
+  model:
+    value: bert
+  vertical:
+    values:
+    - auto
+    - book
+    - camera
+    - job
+    - movie
+    - nbaplayer
+    - restaurant
+    - university
+  representation:
+    value: html-5
+  remove_null:
+    value: false
+  context_size:
+    value: 512
+  monitor_metric:
+    value: "document/f1"
+  learning_rate:
+    value: 0.00005
+  optimizer:
+    value: adamw
+  batch_size:
+    value: 64
+  num_steps:
+    value: 50000
+  validation_interval:
+    value: 1000
+  validation_batches:
+    value: 150
+  early_stopping_patience:
+    value: 20
+  num_workers:
+    value: 8
