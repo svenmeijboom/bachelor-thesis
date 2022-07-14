@@ -3,6 +3,9 @@ name = "swde"
 version = "0.1.0"
 description = ""
 authors = ["Gijs Hendriksen <info@gijshendriksen.nl>"]
+packages = [
+    { include = "information_extraction" },
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
