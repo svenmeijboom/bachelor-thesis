@@ -103,7 +103,7 @@ def print_latex_table(table: Union[pd.DataFrame, Styler], caption: str, label: s
     position_float = None if long_table else 'centering'
 
     print(formatted.to_latex(multicol_align='c', caption=caption, label=label, position_float=position_float,
-                             hrules=True, clines='skip-last;data', environment=environment))
+                             hrules=True, clines='skip-last;data', environment=environment, siunitx=True))
 
 
 def aggregate_tables(
