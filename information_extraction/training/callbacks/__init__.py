@@ -11,6 +11,7 @@ from .validation import ValidationCallback
 from information_extraction.data.metrics import compute_f1, compute_exact
 from information_extraction.training.data import SWDEDataModule
 from information_extraction.evaluation import Evaluator
+from information_extraction.config import WANDB_PROJECT
 
 import wandb
 
@@ -22,7 +23,7 @@ def get_callbacks(dataset: SWDEDataModule, run_name: str, config: wandb.Config) 
         ModelCheckpoint(f'models/{run_name}.state_dict', restore=True,
                         metric=config.monitor_metric, mode=monitor_mode,
                         revert_after=config.get('revert_after')),
-        WandbCallback('information_extraction', run_name, do_init=False),
+        WandbCallback(WANDB_PROJECT, run_name, do_init=False),
         EarlyStopping(patience=config.early_stopping_patience,
                       metric=config.monitor_metric, mode=monitor_mode),
         SavePredictions(documents_dir=f'results/{run_name}', segments_dir=f'results/{run_name}'),
