@@ -1,6 +1,6 @@
 # Extracting Structured Web Content using Deep Neural Language Models
 
-This repository contains the source code used for the experiments in my Master thesis: [Extracting Structured Web Content using Deep Neural Language Models](https://www.ru.nl/publish/pages/769526/gijs_hendriksen.pdf). The same scripts were also used to generate the numbers in the paper "An Analysis of Information Extraction Models and Their Evaluation".
+This repository contains the source code used for the experiments in my Master thesis: [Extracting Structured Web Content using Deep Neural Language Models](https://www.ru.nl/publish/pages/769526/gijs_hendriksen.pdf).
 
 ## Overview
 
