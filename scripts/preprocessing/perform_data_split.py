@@ -16,6 +16,7 @@ def normalize_name(name: str):
 
 
 def main(input_artifact: str, split_mode: str, train_size: float):
+    wandb.login(key='40ad4d481ac62a58620f33de8e36e3dcaedb65f3')
     with tempfile.TemporaryDirectory() as tmpdir:
         wandb.init(
             project=WANDB_PROJECT,
