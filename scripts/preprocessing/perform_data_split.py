@@ -27,8 +27,9 @@ def main(input_artifact: str, split_mode: str, train_size: float):
         input_dir = DATA_DIR / input_artifact
         output_dir = Path(tmpdir)
 
-        dataset_artifact = wandb.use_artifact(f'{input_artifact}:latest')
-        dataset_artifact.download(root=str(input_dir))
+        #dataset_artifact = wandb.use_artifact(f'{input_artifact}:latest')
+        dataset_artifact = wandb.use_artifact("svenmeijboomru/uncategorized/swde:v1")
+        #dataset_artifact.download(root=str(input_dir))
 
         if split_mode == 'random':
             split = get_random_split(input_dir, train_size)
