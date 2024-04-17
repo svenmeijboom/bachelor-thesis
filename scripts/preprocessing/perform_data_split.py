@@ -24,7 +24,7 @@ def main(input_artifact: str, split_mode: str, train_size: float):
             job_type='preprocess',
         )
 
-        input_dir = DATA_DIR + input_artifact
+        input_dir = DATA_DIR / input_artifact
         output_dir = Path(tmpdir)
 
         #dataset_artifact = wandb.use_artifact(f'{input_artifact}:latest')
