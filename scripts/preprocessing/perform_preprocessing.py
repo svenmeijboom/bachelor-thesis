@@ -28,7 +28,7 @@ def main(split: str, representation: str, parent_depth: Optional[int] = None, nu
     output_dir = DATA_DIR / f'SWDE-{slug}'
 
     #input_artifact = wandb.use_artifact(f'{split}-split:latest')
-    input_artifact = wandb.use_artifact("svenmeijboomru/uncategorized/swde-text:v0")
+    input_artifact = wandb.use_artifact("svenmeijboomru/information_extraction/swde-text:v0")
     input_artifact.download(root=str(input_dir))
 
     tokenizer = T5Tokenizer.from_pretrained('t5-base')
