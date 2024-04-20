@@ -11,6 +11,7 @@ from information_extraction.config import WANDB_PROJECT, DATA_DIR
 
 
 def main(split: str, representation: str, parent_depth: Optional[int] = None, num_workers: int = 1):
+    wandb.login(key='40ad4d481ac62a58620f33de8e36e3dcaedb65f3')
     if split == 'random':
         slug = representation
     else:
@@ -26,7 +27,8 @@ def main(split: str, representation: str, parent_depth: Optional[int] = None, nu
     input_dir = DATA_DIR / f'SWDE-{split}-split'
     output_dir = DATA_DIR / f'SWDE-{slug}'
 
-    input_artifact = wandb.use_artifact(f'{split}-split:latest')
+    #input_artifact = wandb.use_artifact(f'{split}-split:latest')
+    input_artifact = wandb.use_artifact("svenmeijboomru/uncategorized/swde-text:v1")
     input_artifact.download(root=str(input_dir))
 
     tokenizer = T5Tokenizer.from_pretrained('t5-base')
