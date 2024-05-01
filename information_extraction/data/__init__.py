@@ -1,6 +1,6 @@
 DOMAINS = {
 
-    'univeristy': ['telephone']
+    'university': ['telephone']
     
     #'auto': ['engine', 'fuel_economy', 'model', 'price'],
     #'book': ['author', 'isbn_13', 'publication_date', 'publisher', 'title'],
