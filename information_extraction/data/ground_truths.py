@@ -23,7 +23,7 @@ class GroundTruths:
         ground_truths = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
 
         with open("test", "w") as gt_file:
-                gt_file.write("gtdir: " + ground_truth_dir)
+                gt_file.write("gtdir: " + str(ground_truth_dir))
 
         for ground_truth_file in ground_truth_dir.glob('*/*.txt'):
             with open(ground_truth_file) as _file:
