@@ -42,4 +42,4 @@ parameters:
   early_stopping_patience:
     value: 20
   num_workers:
-    value: 8
+    value: 2
