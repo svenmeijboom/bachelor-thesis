@@ -19,7 +19,7 @@ def get_dataset(config: wandb.Config) -> SWDEDataModule:
         tag = 'latest'
 
     data_path = Path(f'~/Data/telephone-set-{representation}-{tag}').expanduser()
-    input_artifact = wandb.use_artifact(f'telephone-set-{representation}:{tag}')
+    input_artifact = wandb.use_artifact(f'telephone-{representation}:{tag}')
     input_artifact.download(str(data_path))
 
     split_mode = config.get('split_mode', 'random')
