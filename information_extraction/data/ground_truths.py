@@ -23,9 +23,11 @@ class GroundTruths:
         ground_truths = defaultdict(lambda: defaultdict(lambda: defaultdict(dict)))
 
         with open("test", "w") as gt_file:
-                gt_file.write("gtdir: " + str(ground_truth_dir))
+                gt_file.write("gtdir: " + str(ground_truth_dir) + '\n')
 
         for ground_truth_file in ground_truth_dir.glob('*/*.txt'):
+            with open("test", "w") as gt_file:
+                gt_file.write("gtf: " + str(ground_truth_file) + '\n')
             with open(ground_truth_file) as _file:
                 input_data = _file.read()
 
