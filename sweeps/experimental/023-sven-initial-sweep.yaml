@@ -1,7 +1,7 @@
 program: scripts/training/train.py
 method: grid
 name: sven-initial-sweep
-project: telephone_extraction
+project: telephone-extraction
 description: Finds the context size out of 128, 256 and 512 that maximises performance.
 
 parameters:
