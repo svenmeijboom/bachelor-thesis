@@ -24,11 +24,11 @@ def main(split: str, representation: str, parent_depth: Optional[int] = None, nu
         job_type='preprocess',
     )
 
-    input_dir = DATA_DIR / f'SWDE-{split}-split'
-    output_dir = DATA_DIR / f'SWDE-{slug}'
+    input_dir = DATA_DIR / f'telephone-{split}-split'
+    output_dir = DATA_DIR / f'telephone-{slug}'
 
-    #input_artifact = wandb.use_artifact(f'{split}-split:latest')
-    input_artifact = wandb.use_artifact("svenmeijboomru/information_extraction/swde-text:v0")
+    input_artifact = wandb.use_artifact(f'{split}-split:latest')
+    #input_artifact = wandb.use_artifact("svenmeijboomru/information_extraction/swde-text:v0")
     input_artifact.download(root=str(input_dir))
 
     tokenizer = T5Tokenizer.from_pretrained('t5-base')
@@ -48,11 +48,11 @@ def main(split: str, representation: str, parent_depth: Optional[int] = None, nu
         extractor.process_dataset()
 
     descriptions = {
-        'text': 'Preprocessed SWDE dataset where contexts are represented as pure text',
-        'html': 'Preprocessed SWDE dataset where HTML structure is included in the context',
+        'text': 'Preprocessed telephone dataset where contexts are represented as pure text',
+        'html': 'Preprocessed telephone dataset where HTML structure is included in the context',
     }
 
-    artifact = wandb.Artifact(f'swde-{slug}', type='preprocessed-data', metadata=metadata,
+    artifact = wandb.Artifact(f'telephone-{slug}', type='preprocessed-data', metadata=metadata,
                               description=descriptions[representation])
     artifact.add_dir(str(output_dir))
 
@@ -61,7 +61,7 @@ def main(split: str, representation: str, parent_depth: Optional[int] = None, nu
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='Preprocess the SWDE dataset into segments and sequence representations')
+    parser = ArgumentParser(description='Preprocess the telephone dataset into segments and sequence representations')
 
     parser.add_argument('-s', '--split', choices=['random', 'webke', 'zero-shot'], default='random',
                         help='Which data split to use as input for the preprocessing')
