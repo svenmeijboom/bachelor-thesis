@@ -8,7 +8,7 @@ from .module import SWDEDataModule
 from ..trainer import MODELS
 
 
-DEFAULT_GROUND_TRUTH_DIR = Path('~/Data/SWDE/groundtruth/').expanduser()
+DEFAULT_GROUND_TRUTH_DIR = Path('~/Data/telephone-set/groundtruth/').expanduser()
 
 
 def get_dataset(config: wandb.Config) -> SWDEDataModule:
@@ -18,8 +18,8 @@ def get_dataset(config: wandb.Config) -> SWDEDataModule:
         representation = config.representation
         tag = 'latest'
 
-    data_path = Path(f'~/Data/SWDE-{representation}-{tag}').expanduser()
-    input_artifact = wandb.use_artifact(f'swde-{representation}:{tag}')
+    data_path = Path(f'~/Data/telephone-set-{representation}-{tag}').expanduser()
+    input_artifact = wandb.use_artifact(f'telephone-set-{representation}:{tag}')
     input_artifact.download(str(data_path))
 
     split_mode = config.get('split_mode', 'random')
