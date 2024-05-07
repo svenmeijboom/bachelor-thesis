@@ -28,7 +28,7 @@ def perform_evaluation(trainer: BaseTrainer, dataset: SWDEDataModule, config: wa
 
 
 def main():
-    wandb.init(job_type='train')
+    wandb.init(dir='/tmp',job_type='train')
 
     config = wandb.config
 
