@@ -30,7 +30,7 @@ parameters:
   batch_size:
     value: 64
   num_steps:
-    value: 50000
+    value: 30000
   warmup_steps:
     value: 1000
   validation_interval:
