@@ -24,8 +24,8 @@ def main(split: str, representation: str, parent_depth: Optional[int] = None, nu
         job_type='preprocess',
     )
 
-    input_dir = DATA_DIR / f'telephone-{split}-split'
-    output_dir = DATA_DIR / f'telephone-{slug}'
+    input_dir = DATA_DIR / f'MovieName-{split}-split'
+    output_dir = DATA_DIR / f'MovieName-{slug}'
 
     input_artifact = wandb.use_artifact(f'{split}-split:latest')
     #input_artifact = wandb.use_artifact("svenmeijboomru/information_extraction/swde-text:v0")
@@ -48,11 +48,11 @@ def main(split: str, representation: str, parent_depth: Optional[int] = None, nu
         extractor.process_dataset()
 
     descriptions = {
-        'text': 'Preprocessed telephone dataset where contexts are represented as pure text',
-        'html': 'Preprocessed telephone dataset where HTML structure is included in the context',
+        'text': 'Preprocessed MovieName dataset where contexts are represented as pure text',
+        'html': 'Preprocessed MovieName dataset where HTML structure is included in the context',
     }
 
-    artifact = wandb.Artifact(f'telephone-{slug}', type='preprocessed-data', metadata=metadata,
+    artifact = wandb.Artifact(f'MovieName-{slug}', type='preprocessed-data', metadata=metadata,
                               description=descriptions[representation])
     artifact.add_dir(str(output_dir))
 
@@ -61,7 +61,7 @@ def main(split: str, representation: str, parent_depth: Optional[int] = None, nu
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser(description='Preprocess the telephone dataset into segments and sequence representations')
+    parser = ArgumentParser(description='Preprocess the MovieName dataset into segments and sequence representations')
 
     parser.add_argument('-s', '--split', choices=['random', 'webke', 'zero-shot'], default='random',
                         help='Which data split to use as input for the preprocessing')
