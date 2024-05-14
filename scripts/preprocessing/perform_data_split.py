@@ -77,7 +77,7 @@ def main(input_artifact: str, split_mode: str, train_size: float):
 if __name__ == '__main__':
     parser = ArgumentParser(description='Perform a train/validation/test data split on the SWDE dataset')
 
-    parser.add_argument('-i', '--input-artifact', choices=['swde', 'swde-pos', 'telephone-set', 'MovieName-set'], default='swde',
+    parser.add_argument('-i', '--input-artifact', choices=['swde', 'swde-pos', 'telephone-set', 'MovieName-set', 'swde-set'], default='swde',
                         help='The dataset to use as input for the data split')
     parser.add_argument('-s', '--split-mode', choices=['random', 'webke', 'zero-shot'], default='random',
                         help='Which type of data split to use')
