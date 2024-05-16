@@ -1,7 +1,7 @@
 program: scripts/training/train.py
 method: grid
 name: zero-shot
-project: MovieName-extraction
+project: swde-extraction
 description: Runs the BERT models in a zero shot, 4-fold validation setting
 
 parameters:
@@ -17,7 +17,7 @@ parameters:
     - 3
   vertical:
     values:
-    - Movie
+    - movie
   context_size:
     value: 256
   representation:
