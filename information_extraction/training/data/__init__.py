@@ -8,7 +8,7 @@ from .module import SWDEDataModule
 from ..trainer import MODELS
 
 
-DEFAULT_GROUND_TRUTH_DIR = Path('~/Data/swde-set/groundtruth/').expanduser()
+DEFAULT_GROUND_TRUTH_DIR = Path('/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/swde-zero-shot-split/groundtruth/').expanduser()
 
 
 def get_dataset(config: wandb.Config) -> SWDEDataModule:
@@ -18,7 +18,7 @@ def get_dataset(config: wandb.Config) -> SWDEDataModule:
         representation = config.representation
         tag = 'latest'
 
-    data_path = Path(f'~/Data/swde-set-{representation}-{tag}').expanduser()
+    data_path = Path(f'/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/swde-set-{representation}-{tag}').expanduser()
     input_artifact = wandb.use_artifact(f'swde-{representation}-zero-shot:{tag}')
     input_artifact.download(str(data_path))
 
