@@ -41,7 +41,7 @@ configs = {
 
 def get_dataset(config: wandb.Config) -> SWDEDataModule:
     data_path = Path('~/Data/SWDE-split').expanduser()
-    input_artifact = wandb.use_artifact('random-split:latest')
+    input_artifact = wandb.use_artifact('zero-shot-split:latest')
     input_artifact.download(str(data_path))
 
     with tempfile.TemporaryDirectory() as tmpdir:
