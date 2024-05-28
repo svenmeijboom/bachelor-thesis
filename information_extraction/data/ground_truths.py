@@ -4,7 +4,7 @@ from typing import Union
 
 from information_extraction.config import DATA_DIR
 
-DEFAULT_GROUND_TRUTH_DIR = DATA_DIR / 'groundtruth'
+DEFAULT_GROUND_TRUTH_DIR = DATA_DIR / 'swde-set' / 'groundtruth'
 
 
 class GroundTruths:
