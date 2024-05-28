@@ -1,8 +1,8 @@
 DOMAINS = {
 
-    #'Movie': ['name']
+    'Movie': ['name']
 
-    'movie': ['title']
+    #'movie': ['title']
 
     
     #'auto': ['engine', 'fuel_economy', 'model', 'price'],
