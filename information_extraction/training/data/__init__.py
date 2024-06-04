@@ -24,12 +24,12 @@ def get_dataset(config: wandb.Config) -> SWDEDataModule:
     #input_artifact = wandb.use_artifact(f'MovieName-{representation}-zero-shot:{tag}')
 
     #SWDE test/val
-    #data_path = Path(f'/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/MovieName-swde2000').expanduser()
-    #input_artifact = wandb.use_artifact(f'MovieName-swde2000:{tag}')
+    data_path = Path(f'/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/MovieName-swde2000').expanduser()
+    input_artifact = wandb.use_artifact(f'MovieName-swde2000:{tag}')
 
     #WDC test/val
-    data_path = Path(f'/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/MovieName-wdc1000').expanduser()
-    input_artifact = wandb.use_artifact(f'MovieName-wdc1000:{tag}')
+    #data_path = Path(f'/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/MovieName-wdc1000').expanduser()
+    #input_artifact = wandb.use_artifact(f'MovieName-wdc1000:{tag}')
     
     input_artifact.download(str(data_path))
 

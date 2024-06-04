@@ -8,4 +8,4 @@ str_path = "/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/"
 #str_path = "/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/"
 DATA_DIR = Path(str_path)
 
-DEFAULT_GROUND_TRUTH_DIR_CONF = DATA_DIR / 'MovieName-set' / 'groundtruth'
+DEFAULT_GROUND_TRUTH_DIR_CONF = DATA_DIR / 'swde-set' / 'groundtruth'
