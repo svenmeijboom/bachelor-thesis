@@ -6,9 +6,10 @@ import wandb
 from .base import BaseDataset
 from .module import SWDEDataModule
 from ..trainer import MODELS
+from information_extraction.config import DEFAULT_GROUND_TRUTH_DIR_CONF
 
 
-DEFAULT_GROUND_TRUTH_DIR = Path('/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data2/MovieName-set/groundtruth/').expanduser()
+DEFAULT_GROUND_TRUTH_DIR = DEFAULT_GROUND_TRUTH_DIR_CONF
 
 
 def get_dataset(config: wandb.Config) -> SWDEDataModule:

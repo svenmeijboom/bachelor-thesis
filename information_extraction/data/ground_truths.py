@@ -2,9 +2,9 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Union
 
-from information_extraction.config import DATA_DIR
+from information_extraction.config import DATA_DIR, DEFAULT_GROUND_TRUTH_DIR_CONF
 
-DEFAULT_GROUND_TRUTH_DIR = DATA_DIR / 'MovieName-set' / 'groundtruth'
+DEFAULT_GROUND_TRUTH_DIR = DEFAULT_GROUND_TRUTH_DIR_CONF
 
 
 class GroundTruths:
