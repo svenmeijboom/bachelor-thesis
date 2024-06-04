@@ -8,7 +8,7 @@ from .module import SWDEDataModule
 from ..trainer import MODELS
 
 
-DEFAULT_GROUND_TRUTH_DIR = Path('/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/MovieName-set/groundtruth/').expanduser()
+DEFAULT_GROUND_TRUTH_DIR = Path('/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data2/MovieName-set/groundtruth/').expanduser()
 
 
 def get_dataset(config: wandb.Config) -> SWDEDataModule:
