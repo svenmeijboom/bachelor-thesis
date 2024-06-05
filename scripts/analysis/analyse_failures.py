@@ -7,7 +7,7 @@ from information_extraction.evaluation import get_evaluator
 from information_extraction.data.ground_truths import GROUND_TRUTHS
 from information_extraction.data.metrics import compute_f1, compute_exact
 
-SWEEP_ID = 'v2h7wsaa'
+SWEEP_ID = 'ffvd8vuf'
 
 plt.style.use('seaborn')
 
