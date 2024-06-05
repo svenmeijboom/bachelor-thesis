@@ -65,7 +65,7 @@ def show_failure_types():
 
 
 def show_different_performances_per_website(evaluator, tables):
-    df_agg = aggregate_tables(evaluator, tables, per_website=True, per_attribute=True, per_vertical=True)
+    df_agg = aggregate_tables(evaluator, tables, per_website=True, per_attribute=True)#, per_vertical=True)
     df_agg = df_agg[('Instance', 'F1')]
 
     fig, axes = plt.subplots(4, 2, sharex='all', figsize=(10, 6))
