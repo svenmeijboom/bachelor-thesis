@@ -24,8 +24,8 @@ def main(split: str, representation: str, parent_depth: Optional[int] = None, nu
         job_type='preprocess',
     )
 
-    input_dir = DATA_DIR / f'MovieName-{split}-split'
-    output_dir = DATA_DIR / f'MovieName-{slug}'
+    input_dir = DATA_DIR / f'swde-{split}-split'
+    output_dir = DATA_DIR / f'swde-{slug}'
 
     input_artifact = wandb.use_artifact(f'{split}-split:latest')
     #input_artifact = wandb.use_artifact("svenmeijboomru/information_extraction/swde-text:v0")
@@ -52,7 +52,7 @@ def main(split: str, representation: str, parent_depth: Optional[int] = None, nu
         'html': 'Preprocessed swde dataset where HTML structure is included in the context',
     }
 
-    artifact = wandb.Artifact(f'MovieName-{slug}', type='preprocessed-data', metadata=metadata,
+    artifact = wandb.Artifact(f'swde-{slug}', type='preprocessed-data', metadata=metadata,
                               description=descriptions[representation])
     artifact.add_dir(str(output_dir))
 
