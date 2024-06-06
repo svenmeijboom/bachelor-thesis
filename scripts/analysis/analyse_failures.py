@@ -195,10 +195,10 @@ def main():
         for key, value in get_wandb_tables(SWEEP_ID, table_type='segments').items()
         if 'bert' in key
     }
-    evaluator = get_evaluator()
+    #evaluator = get_evaluator()
 
     sample_failures(document_tables)
-    show_different_performances_per_website(evaluator, document_tables)
+    #show_different_performances_per_website(evaluator, document_tables)
 
     show_failure_types()
 
