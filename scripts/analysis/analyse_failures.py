@@ -14,6 +14,7 @@ plt.style.use('seaborn')
 
 def sample_failures(tables, num_failures: int = 20):
     new_rows = []
+    print(list(tables.items()))
 
     for run_name, df in tables.items():
         print(run_name,df)
