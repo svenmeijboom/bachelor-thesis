@@ -190,12 +190,12 @@ def main():
     document_tables = {
         key: value
         for key, value in get_wandb_tables(SWEEP_ID).items()
-        if 'bert' in key
+        #if 'bert' in key
     }
     segment_tables = {
         key: value
         for key, value in get_wandb_tables(SWEEP_ID, table_type='segments').items()
-        if 'bert' in key
+        #if 'bert' in key
     }
     #evaluator = get_evaluator()
 
