@@ -190,21 +190,21 @@ def main():
     #    for key, value in get_wandb_tables(SWEEP_ID).items()
         #if 'bert' in key
     #}
-    #segment_tables = {
-    #    key: value
-    #    for key, value in get_wandb_tables(SWEEP_ID, table_type='segments').items()
-    #    #if 'bert' in key
-    #}
+    segment_tables = {
+        key: value
+        for key, value in get_wandb_tables(SWEEP_ID, table_type='segments').items()
+        #if 'bert' in key
+    }
     #evaluator = get_evaluator()
 
     #sample_failures(document_tables)
     #show_different_performances_per_website(evaluator, document_tables)
 
-    show_failure_types()
+    #show_failure_types()
 
-    #ranks, df_mrr = compute_mean_reciprocal_ranks(segment_tables)
-    #show_rank_distribution(ranks)
-    #print_mrrs(df_mrr)
+    ranks, df_mrr = compute_mean_reciprocal_ranks(segment_tables)
+    show_rank_distribution(ranks)
+    print_mrrs(df_mrr)
 
 
 if __name__ == '__main__':
