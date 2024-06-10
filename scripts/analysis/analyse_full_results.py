@@ -1,7 +1,7 @@
 from information_extraction.analysis.tables import get_wandb_tables, print_latex_table, aggregate_tables
 from information_extraction.evaluation import get_evaluator
 
-SWEEP_ID = 'v2h7wsaa'
+SWEEP_ID = 'ffvd8vuf'
 
 
 def print_full_overview(evaluator, tables):
