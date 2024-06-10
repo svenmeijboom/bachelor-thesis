@@ -43,7 +43,7 @@ parameters:
   validation_interval:
     value: 1000
   validation_documents:
-    value: 150
+    value: 200
   evaluation_method:
     value: greedy
   early_stopping_patience:
