@@ -16,6 +16,7 @@ def sample_failures(tables, num_failures: int = 20):
     new_rows = []
 
     for run_name, df in tables.items():
+        print(run_name,df)
         attributes = [x[:-5] for x in df.columns if x.endswith('/true')]
 
         for attribute in attributes:
