@@ -7,7 +7,7 @@ from information_extraction.evaluation import get_evaluator
 from information_extraction.data.ground_truths import GROUND_TRUTHS
 from information_extraction.data.metrics import compute_f1, compute_exact
 
-SWEEP_ID = 'ffvd8vuf'
+SWEEP_ID = 'chxe9bvx'
 
 plt.style.use('seaborn')
 
@@ -185,19 +185,19 @@ def show_rank_distribution(ranks):
 
 
 def main():
-    #document_tables = {
-    #    key: value
-    #    for key, value in get_wandb_tables(SWEEP_ID).items()
+    document_tables = {
+        key: value
+        for key, value in get_wandb_tables(SWEEP_ID).items()
         #if 'bert' in key
-    #}
+    }
     segment_tables = {
         key: value
         for key, value in get_wandb_tables(SWEEP_ID, table_type='segments').items()
         #if 'bert' in key
     }
-    #evaluator = get_evaluator()
+    evaluator = get_evaluator()
 
-    #sample_failures(document_tables)
+    sample_failures(document_tables)
     #show_different_performances_per_website(evaluator, document_tables)
 
     #show_failure_types()
