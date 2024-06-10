@@ -14,7 +14,6 @@ plt.style.use('seaborn')
 
 def sample_failures(tables, num_failures: int = 20):
     new_rows = []
-    print(list(tables.items()))
 
     for run_name, df in tables.items():
         print(run_name,df)
@@ -22,7 +21,10 @@ def sample_failures(tables, num_failures: int = 20):
 
         for attribute in attributes:
             df_sub = df[df[f'{attribute}/em'] == 0]
+            print(df_sub)
+            print("\n\n\n\n\n\nSampled:")
             df_sub = df_sub.sample(min(num_failures, len(df_sub)))
+            print(df_sub)
 
             for _, row in df_sub.iterrows():
                 vertical, website, doc_id = row['doc_id'].split('/')
