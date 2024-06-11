@@ -19,6 +19,7 @@ def sample_failures(tables, num_failures: int = 20):
         attributes = [x[:-5] for x in df.columns if x.endswith('/true')]
 
         for attribute in attributes:
+            print(attribute)
             df_sub = df[df[f'{attribute}/em'] == 0]
             df_sub = df_sub.sample(min(num_failures, len(df_sub)))
 
