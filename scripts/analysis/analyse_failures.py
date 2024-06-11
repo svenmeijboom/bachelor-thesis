@@ -203,9 +203,9 @@ def main():
 
     #show_failure_types()
 
-    ranks, df_mrr = compute_mean_reciprocal_ranks(segment_tables)
-    show_rank_distribution(ranks)
-    print_mrrs(df_mrr)
+    #ranks, df_mrr = compute_mean_reciprocal_ranks(segment_tables)
+    #show_rank_distribution(ranks)
+    #print_mrrs(df_mrr)
 
 
 if __name__ == '__main__':
