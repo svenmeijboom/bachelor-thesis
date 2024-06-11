@@ -189,7 +189,7 @@ def show_rank_distribution(ranks):
 def remove_rows(document_tables):
     document_dir = DATA_DIR / 'Tables' / SWEEP_ID / 'segments'
     for document in document_tables:
-        with open(document_dir/document, 'rb') as inp, open(document_dir/"new_"+document, 'wb') as out:
+        with open(document_dir/document+".csv", 'rb') as inp, open(document_dir/"new_"+document+".csv", 'wb') as out:
             writer = csv.writer(out)
             for row in csv.reader(inp):
                 if row[1] == "title":
