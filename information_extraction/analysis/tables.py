@@ -137,6 +137,7 @@ def aggregate_tables(
 
         for _, row in table.iterrows():
             for attribute in DOMAINS[row['vertical']]:
+                print(attribute)
                 if f'{attribute}/true' not in row:
                     continue
 
