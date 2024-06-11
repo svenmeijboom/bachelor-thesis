@@ -1,7 +1,7 @@
 from information_extraction.analysis.tables import get_wandb_tables, print_latex_table, aggregate_tables
 from information_extraction.evaluation import get_evaluator
 
-SWEEP_ID = 'mdvwit64'
+SWEEP_ID = 'chxe9bvx'
 
 
 def print_full_overview(evaluator, tables):
@@ -28,7 +28,7 @@ def main():
     evaluator = get_evaluator()
 
     print_full_overview(evaluator, tables)
-    #print_attribute_level_performance(evaluator, tables)
+    print_attribute_level_performance(evaluator, tables)
 
 
 if __name__ == '__main__':
