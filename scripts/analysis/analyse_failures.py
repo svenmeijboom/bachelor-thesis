@@ -191,7 +191,7 @@ def remove_rows(document_tables):
     for document in document_tables:
         document_name = document+".csv"
         new_document_name = "new_"+document+".csv"
-        with open(document_dir/document_name, 'rb') as inp, open(document_dir/new_document_name, 'wb') as out:
+        with open(document_dir/document_name, 'r') as inp, open(document_dir/new_document_name, 'w') as out:
             writer = csv.writer(out)
             for row in csv.reader(inp):
                 if row[1] == "title":
