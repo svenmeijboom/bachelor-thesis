@@ -23,7 +23,7 @@ def sample_failures(tables, num_failures: int = 20):
         for attribute in attributes:
             if attribute == 'title':
 
-                df_sub = df[df[f'{attribute}/em'] == 0 and df[f'{attribute}/em'] == 0]
+                df_sub = df[df[f'{attribute}/em'] == 0]
                 df_sub = df_sub.sample(min(num_failures, len(df_sub)))
 
                 for _, row in df_sub.iterrows():
