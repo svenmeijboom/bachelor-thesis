@@ -194,7 +194,7 @@ def remove_rows(segment_tables):
         with open(document_dir/document_name, 'r') as inp, open(document_dir/new_document_name, 'w') as out:
             writer = csv.writer(out)
             reader = csv.reader(inp)
-            writer.writerow(reader[0])
+            writer.writerow(next(reader))
             for row in reader:
                 if row[1] == "title":
                     writer.writerow(row)
