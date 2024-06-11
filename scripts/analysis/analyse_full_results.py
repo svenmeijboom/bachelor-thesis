@@ -28,9 +28,9 @@ def main():
 
     evaluator = get_evaluator()
 
-    print(tables)
-    print_full_overview(evaluator, tables)
-    print_attribute_level_performance(evaluator, tables)
+    for table in tables.items:
+        print_full_overview(evaluator, table)
+        print_attribute_level_performance(evaluator, table)
 
 
 if __name__ == '__main__':
