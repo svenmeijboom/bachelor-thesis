@@ -184,6 +184,9 @@ def show_rank_distribution(ranks):
 
     plt.savefig('rank_distribution.png')
 
+#def remove_columns():
+
+
 
 def main():
     document_tables = {
@@ -198,7 +201,9 @@ def main():
     }
     evaluator = get_evaluator()
 
-    sample_failures(document_tables)
+    print(document_tables)
+    print(document_tables.items)
+    #sample_failures(document_tables)
     #show_different_performances_per_website(evaluator, document_tables)
 
     #show_failure_types()
