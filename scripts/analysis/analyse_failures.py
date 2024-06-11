@@ -207,8 +207,10 @@ def remove_columns(document_tables):
         with open(document_dir/document_name, 'r') as inp, open(document_dir/new_document_name, 'w') as out:
             writer = csv.writer(out)
             reader = csv.reader(inp)
+            firstrow = next(reader)
+            writer.writerow(("vertical",firstrow[0],firstrow[6],firstrow[7],firstrow[8],firstrow[9],firstrow[10]))
             for row in reader:
-                writer.writerow((row[0],row[6],row[7],row[8],row[9],row[10]))
+                writer.writerow(("movie",row[0],row[6],row[7],row[8],row[9],row[10]))
 
 
 def main():
