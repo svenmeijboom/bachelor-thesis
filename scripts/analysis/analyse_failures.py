@@ -7,6 +7,7 @@ from information_extraction.evaluation import get_evaluator
 from information_extraction.data.ground_truths import GROUND_TRUTHS
 from information_extraction.data.metrics import compute_f1, compute_exact
 import csv
+from information_extraction.config import DATA_DIR
 
 SWEEP_ID = 'chxe9bvx'
 
@@ -185,9 +186,10 @@ def show_rank_distribution(ranks):
 
     plt.savefig('rank_distribution.png')
 
-def remove_columns(document_tables):
+def remove_rows(document_tables):
+    document_dir = DATA_DIR / 'Tables' / SWEEP_ID / 'segments'
     for document in document_tables:
-        with open(document, 'rb') as inp, open("new_"+document, 'wb') as out:
+        with open(document_dir/document, 'rb') as inp, open(document_dir/"new_"+document, 'wb') as out:
             writer = csv.writer(out)
             for row in csv.reader(inp):
                 if row[1] == "title":
@@ -207,7 +209,7 @@ def main():
     }
     evaluator = get_evaluator()
 
-    remove_columns(document_tables)
+    remove_rows(document_tables)
     #sample_failures(document_tables)
     #show_different_performances_per_website(evaluator, document_tables)
 
