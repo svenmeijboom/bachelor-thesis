@@ -154,7 +154,6 @@ def aggregate_tables(
                 if subset is None or any(all(new_row[key] == value for key, value in condition.items())
                                          for condition in subset):
                     rows.append(new_row)
-                    print(new_row)
 
     df = pd.DataFrame(rows)
 
