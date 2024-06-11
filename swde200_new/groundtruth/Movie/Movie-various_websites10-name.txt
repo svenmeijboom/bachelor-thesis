@@ -1,0 +1,202 @@
+Movie   various_websites10       http://schema.org/name
+200		200		250		248
+0000	1	The Sweet Hereafter
+0001	1	Breaking the Waves
+0002	1	Dead Man Walking
+0003	1	Red
+0004	1	Chungking Express
+0005	1	Short Cuts
+0006	1	The Remains of the Day
+0007	1	The Piano
+0008	1	Belle de Jour
+0009	1	sex, lies, and videotape
+0010	1	The World of Apu
+0011	1	A Woman Under the Influence
+0012	1	Taxi Driver
+0013	1	A Streetcar Named Desire
+0014	1	Saturday Night Fever
+0015	1	Romeo and Juliet
+0016	1	Rocky
+0017	1	A Raisin in the Sun
+0018	1	Raise the Red Lantern
+0019	1	Raging Bull
+0020	1	Picnic at Hanging Rock
+0021	1	Pather Panchali
+0022	1	On the Waterfront
+0023	1	Nashville
+0024	1	Midnight Cowboy
+0025	1	Medium Cool
+0026	1	The Marriage of Maria Braun
+0027	1	Malcolm X
+0028	1	The Last Wave
+0029	1	Last Tango in Paris
+0030	1	The Last Picture Show
+0031	1	Five Easy Pieces
+0032	1	Fanny &amp; Alexander
+0033	1	East of Eden
+0034	1	Drugstore Cowboy
+0035	1	Deliverance
+0036	1	The Crying Game
+0037	1	The Conformist
+0038	1	Cinema Paradiso
+0039	1	Barry Lyndon
+0040	1	Dr. Strangelove or How I Learned to Stop Worrying and Love the Bomb
+0041	1	National Lampoon's Animal House
+0042	1	Young Frankenstein
+0043	1	Withnail &amp; I
+0044	1	When Harry Met Sally
+0045	1	Tootsie
+0046	1	This Is Spinal Tap
+0047	1	Some Like It Hot
+0048	1	Slacker
+0049	1	Singin' in the Rain
+0050	1	Harry Potter and the Sorcerer's Stone
+0051	1	Slumdog Millionaire
+0052	1	The Pianist
+0053	1	Almost Famous
+0054	1	Requiem for a Dream
+0055	1	March of the Penguins
+0056	1	Lost in Translation
+0057	1	25th Hour
+0058	1	Gone With the Wind
+0059	1	Ferris Bueller's Day Off
+0060	1	Some Like It Hot
+0061	1	City Lights
+0062	1	Schindler's List
+0063	1	One Flew Over the Cuckoo's Nest
+0064	1	The Bridge on the River Kwai
+0065	1	Vertigo
+0066	1	On the Waterfront
+0067	1	Dr. Strangelove or How I Learned to Stop Worrying and Love the Bomb
+0068	1	Snow White and the Seven Dwarfs
+0069	1	The Treasure of the Sierra Madre
+0070	1	It Happened One Night
+0071	1	Fantasia
+0072	1	Red River
+0073	1	Modern Times
+0074	1	Yankee Doodle Dandy
+0075	1	His Girl Friday
+0076	1	A Star Is Born
+0077	1	42nd Street
+0078	1	Ninotchka
+0079	1	Nashville
+0080	1	Young Frankenstein
+0081	1	The Killer
+0082	1	Once Upon a Time in the West
+0083	1	The Red Badge of Courage
+0084	1	The Guns of Navarone
+0085	1	Ice Station Zebra
+0086	1	The Professionals
+0087	1	Deliverance
+0088	1	Raising Arizona
+0089	1	Oliver!
+0090	1	Elvis
+0091	1	Rushmore
+0092	1	Fast Times at Ridgemont High
+0093	1	The Piano
+0094	1	Planet of the Apes
+0095	1	Goldfinger
+0096	1	No Way Out
+0097	1	You Only Live Twice
+0098	1	For Your Eyes Only
+0099	1	Diamonds Are Forever
+0100	1	Across the Universe
+0101	1	Xanadu
+0102	1	Nine
+0103	1	New York, New York
+0104	1	School Daze
+0105	1	Everyone Says I Love You
+0106	1	Dancer in the Dark
+0107	1	Hedwig and the Angry Inch
+0108	1	Love's Labour's Lost
+0109	1	Sin City
+0110	1	L.A. Confidential
+0111	1	Blade Runner
+0112	1	Memento
+0113	1	Fargo
+0114	1	Body Heat
+0115	1	The Black Dahlia
+0116	1	Against All Odds
+0117	1	Twilight (1998)
+0118	1	Kiss of Death
+0119	1	Hollywoodland
+0120	1	The Grifters
+0121	1	Mulholland Falls
+0122	1	Thief
+0123	1	Someone to Watch Over Me
+0124	1	The Man Who Wasn't There
+0125	1	Mulholland Drive
+0126	1	U-Turn
+0127	1	Night and the City
+0128	1	The Last Seduction
+0129	1	Blood Simple
+0130	1	Bound
+0131	1	Lost Highway
+0132	1	Romeo Is Bleeding
+0133	1	After Dark, My Sweet
+0134	1	Red Rock West
+0135	1	The Gingerbread Man
+0136	1	The Salton Sea
+0137	1	The Underneath
+0138	1	Kill Me Again
+0139	1	Following
+0140	1	Sleepless in Seattle
+0141	1	When Harry Met Sally...
+0142	1	While You Were Sleeping
+0143	1	End of Days
+0144	1	Strange Days
+0145	1	Four Rooms
+0146	1	Better Luck Tomorrow
+0147	1	New Year's Eve
+0148	1	Bruce Almighty
+0149	1	Anchorman:
+0150	2	Galaxina	Galaxina (1980)
+0151	2	Prom Night	Prom Night (1980)
+0152	2	Hopscotch	Hopscotch (1980)
+0153	2	Yesterday, Today and Tomorrow	Yesterday, Today and Tomorrow (1963)
+0154	2	The Go-Between	The Go-Between (1963)
+0155	2	Nebo Zovyot	Nebo Zovyot (1963)
+0156	2	The Hunter	The Hunter (1980)
+0157	2	Milano Odia: La Polizia non Può Sparare	Milano Odia: La Polizia non Può Sparare (1980)
+0158	2	Cafe Express	Cafe Express (1980)
+0159	2	Loving Couples	Loving Couples (1980)
+0160	2	The Island	The Island (1980)
+0161	2	Ordinary People	Ordinary People (1980)
+0162	2	The Exterminator	The Exterminator (1980)
+0163	2	The Hearse	The Hearse (1980)
+0164	2	The First Deadly Sin	The First Deadly Sin (1980)
+0165	2	It's My Turn	It's My Turn (1980)
+0166	2	The Incredible Shrinking Woman	The Incredible Shrinking Woman (1981)
+0167	2	The Devil and Max Devlin	The Devil and Max Devlin (1981)
+0168	2	La Boum	La Boum (1981)
+0169	2	Mommie Dearest	Mommie Dearest (1981)
+0170	2	The French Lieutenant's Woman	The French Lieutenant's Woman (1981)
+0171	2	Chanel Solitaire	Chanel Solitaire (1981)
+0172	2	Cabo Blanco	Cabo Blanco (1981)
+0173	2	Sharky's Machine	Sharky's Machine (1981)
+0174	2	Eyes of a Stranger	Eyes of a Stranger (1981)
+0175	2	Priest of Love	Priest of Love (1981)
+0176	2	Imagine the Sound	Imagine the Sound (1981)
+0177	2	Threshold	Threshold (1981)
+0178	2	Southern Comfort	Southern Comfort (1981)
+0179	2	So Fine	So Fine (1981)
+0180	2	Street Music	Street Music (1981)
+0181	2	The Haunted Palace	The Haunted Palace (1963)
+0182	2	Surfacing	Surfacing (1981)
+0183	2	Time Bandits	Time Bandits (1981)
+0184	2	Broken English	Broken English (1981)
+0185	2	Arthur	Arthur (1981)
+0186	2	The Pursuit of D.B. Cooper	The Pursuit of D.B. Cooper (1981)
+0187	2	Porky's	Porky's (1981)
+0188	2	Green Ice	Green Ice (1981)
+0189	2	Pacific Banana	Pacific Banana (1981)
+0190	2	Getting Over	Getting Over (1981)
+0191	2	Puberty Blues	Puberty Blues (1981)
+0192	2	The Last of the Knucklemen	The Last of the Knucklemen (1981)
+0193	2	Shock Treatment	Shock Treatment (1981)
+0194	2	Pennies from Heaven	Pennies from Heaven (1981)
+0195	2	Going Ape!	Going Ape! (1981)
+0196	2	Ghost Story	Ghost Story (1981)
+0197	2	The Eye of the Needle	The Eye of the Needle (1981)
+0198	2	Zoot Suit	Zoot Suit (1981)
+0199	2	Clash of the Titans	Clash of the Titans (1981)
