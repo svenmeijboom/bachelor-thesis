@@ -6,6 +6,7 @@ from information_extraction.analysis.tables import get_wandb_tables, aggregate_t
 from information_extraction.evaluation import get_evaluator
 from information_extraction.data.ground_truths import GROUND_TRUTHS
 from information_extraction.data.metrics import compute_f1, compute_exact
+import csv
 
 SWEEP_ID = 'chxe9bvx'
 
@@ -184,8 +185,13 @@ def show_rank_distribution(ranks):
 
     plt.savefig('rank_distribution.png')
 
-#def remove_columns():
-
+def remove_columns(document_tables):
+    for document in document_tables:
+        with open(document, 'rb') as inp, open("new_"+document, 'wb') as out:
+            writer = csv.writer(out)
+            for row in csv.reader(inp):
+                if row[1] == "title":
+                    writer.writerow(row)
 
 
 def main():
@@ -201,8 +207,7 @@ def main():
     }
     evaluator = get_evaluator()
 
-    print(document_tables)
-    print(document_tables.items)
+    remove_columns(document_tables)
     #sample_failures(document_tables)
     #show_different_performances_per_website(evaluator, document_tables)
 
