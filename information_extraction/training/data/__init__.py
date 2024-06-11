@@ -23,13 +23,9 @@ def get_dataset(config: wandb.Config) -> SWDEDataModule:
     #data_path = Path(f'/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/MovieName-set-{representation}-{tag}').expanduser()
     #input_artifact = wandb.use_artifact(f'MovieName-{representation}-zero-shot:{tag}')
 
-    #New one
-    data_path = Path(f'/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/swde-set200').expanduser()
-    input_artifact = wandb.use_artifact(f'swde-html-zero-shot:{tag}')
-
     #SWDE test/val
-    #data_path = Path(f'/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/MovieName-swde200').expanduser()
-    #input_artifact = wandb.use_artifact(f'MovieName-swde200:{tag}')
+    data_path = Path(f'/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/MovieName-swde200').expanduser()
+    input_artifact = wandb.use_artifact(f'MovieName-swde200:{tag}')
 
     #WDC test/val
     #data_path = Path(f'/vol/csedu-nobackup/other/smeijboom/bachelor-thesis/Data/MovieName-wdc1000').expanduser()
