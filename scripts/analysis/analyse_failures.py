@@ -228,14 +228,14 @@ def main():
 
     #remove_rows(segment_tables)
     #remove_columns(document_tables)
-    #sample_failures(document_tables)
+    sample_failures(document_tables)
     #show_different_performances_per_website(evaluator, document_tables)
 
-    show_failure_types()
+    #show_failure_types()
 
-    ranks, df_mrr = compute_mean_reciprocal_ranks(segment_tables)
-    show_rank_distribution(ranks)
-    print_mrrs(df_mrr)
+    #ranks, df_mrr = compute_mean_reciprocal_ranks(segment_tables)
+    #show_rank_distribution(ranks)
+    #print_mrrs(df_mrr)
 
 
 if __name__ == '__main__':
