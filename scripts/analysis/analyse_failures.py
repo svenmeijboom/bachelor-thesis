@@ -199,6 +199,17 @@ def remove_rows(segment_tables):
                 if row[1] == "title":
                     writer.writerow(row)
 
+def remove_columns(document_tables):
+    document_dir = DATA_DIR / 'Tables' / SWEEP_ID / 'documents'
+    for document in document_tables:
+        document_name = document+".csv"
+        new_document_name = "new_"+document+".csv"
+        with open(document_dir/document_name, 'r') as inp, open(document_dir/new_document_name, 'w') as out:
+            writer = csv.writer(out)
+            reader = csv.reader(inp)
+            for row in reader:
+                writer.writerow((row[0],row[6],row[7],row[8],row[9],row[10]))
+
 
 def main():
     document_tables = {
@@ -213,7 +224,7 @@ def main():
     }
     evaluator = get_evaluator()
 
-    remove_rows(segment_tables)
+    remove_columns(document_tables)
     #sample_failures(document_tables)
     #show_different_performances_per_website(evaluator, document_tables)
 
