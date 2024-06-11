@@ -27,15 +27,15 @@ def sample_failures(tables, num_failures: int = 20):
 
             for _, row in df_sub.iterrows():
                 vertical, website, doc_id = row['doc_id'].split('/')
-
-                new_rows.append({
-                    'vertical': vertical,
-                    'website': website,
-                    'doc_id': doc_id,
-                    'attribute': attribute,
-                    'true': row[f'{attribute}/true'],
-                    'pred': row[f'{attribute}/pred'],
-                })
+                if attribute=='title':
+                    new_rows.append({
+                        'vertical': vertical,
+                        'website': website,
+                        'doc_id': doc_id,
+                        'attribute': attribute,
+                        'true': row[f'{attribute}/true'],
+                        'pred': row[f'{attribute}/pred'],
+                    })
 
     df = pd.DataFrame(new_rows)
 
