@@ -30,7 +30,6 @@ def get_wandb_tables(sweep_id: str, tables_root: Optional[Union[str, Path]] = No
     if os.path.exists(tables_dir):
         dfs = {}
         for filename in os.listdir(tables_dir):
-            print(filename)
             if filename.endswith('.csv'):
                 df = pd.read_csv(tables_dir / filename, dtype=str).fillna('')
 
