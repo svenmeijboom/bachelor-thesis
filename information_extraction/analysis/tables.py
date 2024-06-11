@@ -26,12 +26,9 @@ def get_wandb_tables(sweep_id: str, tables_root: Optional[Union[str, Path]] = No
         tables_root = Path(tables_root)
 
     tables_dir = tables_root / sweep_id / table_type
-    print(tables_dir)
 
     if os.path.exists(tables_dir):
         dfs = {}
-        print("os path exists")
-        print(os.listdir(tables_dir))
         for filename in os.listdir(tables_dir):
             print(filename)
             if filename.endswith('.csv'):
@@ -53,7 +50,9 @@ def get_wandb_tables(sweep_id: str, tables_root: Optional[Union[str, Path]] = No
 
     dfs = {}
 
+    print(sweep.runs)
     for run in sweep.runs:
+        print(run.files())
         for file in run.files():
             if file.name.startswith(f'media/table/{table_type}/test_'):
                 print(f'Downloading {run.name}: {file.name}')
