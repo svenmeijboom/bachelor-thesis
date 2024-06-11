@@ -186,14 +186,16 @@ def show_rank_distribution(ranks):
 
     plt.savefig('rank_distribution.png')
 
-def remove_rows(document_tables):
+def remove_rows(segment_tables):
     document_dir = DATA_DIR / 'Tables' / SWEEP_ID / 'segments'
-    for document in document_tables:
+    for document in segment_tables:
         document_name = document+".csv"
         new_document_name = "new_"+document+".csv"
         with open(document_dir/document_name, 'r') as inp, open(document_dir/new_document_name, 'w') as out:
             writer = csv.writer(out)
-            for row in csv.reader(inp):
+            reader = csv.reader(inp)
+            writer.writerow(reader[0])
+            for row in reader:
                 if row[1] == "title":
                     writer.writerow(row)
 
@@ -211,7 +213,7 @@ def main():
     }
     evaluator = get_evaluator()
 
-    remove_rows(document_tables)
+    remove_rows(segment_tables)
     #sample_failures(document_tables)
     #show_different_performances_per_website(evaluator, document_tables)
 
