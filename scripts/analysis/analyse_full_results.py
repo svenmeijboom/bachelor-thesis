@@ -28,6 +28,7 @@ def main():
 
     evaluator = get_evaluator()
 
+    print(tables)
     print_full_overview(evaluator, tables)
     print_attribute_level_performance(evaluator, tables)
 
