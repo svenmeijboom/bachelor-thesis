@@ -226,8 +226,9 @@ def main():
     }
     evaluator = get_evaluator()
 
-    remove_columns(document_tables)
-    #sample_failures(document_tables)
+    #remove_rows(segment_tables)
+    #remove_columns(document_tables)
+    sample_failures(document_tables)
     #show_different_performances_per_website(evaluator, document_tables)
 
     #show_failure_types()
