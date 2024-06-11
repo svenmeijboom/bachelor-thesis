@@ -13,13 +13,14 @@ def print_full_overview(evaluator, tables):
 
 
 def print_attribute_level_performance(evaluator, tables):
-    df_agg = aggregate_tables(evaluator, tables, per_vertical=True, per_attribute=True, run_name_parts=[0]).loc['bert']
+    print(aggregate_tables(evaluator, tables, per_vertical=True, per_attribute=True, run_name_parts=[0]))
+    #df_agg = aggregate_tables(evaluator, tables, per_vertical=True, per_attribute=True, run_name_parts=[0]).loc['bert']
 
-    table = df_agg.style.format_index(lambda s: 'NBA player' if s == 'nbaplayer' else s.capitalize(), level=0)
-    table = table.format_index('\\verb|{}|', level=1)
+    #table = df_agg.style.format_index(lambda s: 'NBA player' if s == 'nbaplayer' else s.capitalize(), level=0)
+    #table = table.format_index('\\verb|{}|', level=1)
 
-    print_latex_table(table, 'Attribute-level performance of our best BERT configuration.',
-                      'table:attribute_level_performance', long_table=True)
+    #print_latex_table(table, 'Attribute-level performance of our best BERT configuration.',
+    #                  'table:attribute_level_performance', long_table=True)
 
 
 def main():
