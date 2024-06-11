@@ -137,7 +137,6 @@ def aggregate_tables(
 
         for _, row in table.iterrows():
             for attribute in DOMAINS[row['vertical']]:
-                print(attribute)
                 if f'{attribute}/true' not in row:
                     continue
 
@@ -155,6 +154,7 @@ def aggregate_tables(
                 if subset is None or any(all(new_row[key] == value for key, value in condition.items())
                                          for condition in subset):
                     rows.append(new_row)
+                    print(new_row)
 
     df = pd.DataFrame(rows)
 
