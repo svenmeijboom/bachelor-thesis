@@ -60,7 +60,10 @@ def get_wandb_tables(sweep_id: str, tables_root: Optional[Union[str, Path]] = No
                 df.to_csv(tables_dir / f'{run.name}.csv', index=False)
                 dfs[run.name] = df
 
-    shutil.rmtree(tables_dir / 'media')
+    try:
+        shutil.rmtree(tables_dir / 'media')
+    except:
+        print('No tree')
 
     return dfs
 
