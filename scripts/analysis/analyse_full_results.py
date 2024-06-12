@@ -5,7 +5,7 @@ SWEEP_ID = 'gn07j78t'
 
 
 def print_full_overview(evaluator, tables):
-    df_agg = aggregate_tables(evaluator, tables, run_name_parts=[0])
+    df_agg = aggregate_tables(evaluator, tables)#, run_name_parts=[0])
     df_agg.index.name = 'Model'
 
     print_latex_table(df_agg, caption='Performance of our extraction models, compared to several strong baselines.',
