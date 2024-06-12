@@ -29,7 +29,7 @@ def main():
     evaluator = get_evaluator()
 
     print_full_overview(evaluator, tables)
-    print_attribute_level_performance(evaluator, tables)
+    #print_attribute_level_performance(evaluator, tables)
 
 
 if __name__ == '__main__':
