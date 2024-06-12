@@ -9,7 +9,7 @@ from information_extraction.data.metrics import compute_f1, compute_exact
 import csv
 from information_extraction.config import DATA_DIR
 
-SWEEP_ID = 'gn07j78t'
+SWEEP_ID = '80hq4n1h'
 
 plt.style.use('seaborn')
 
