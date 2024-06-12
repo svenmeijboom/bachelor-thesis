@@ -44,8 +44,8 @@ def get_wandb_tables(sweep_id: str, tables_root: Optional[Union[str, Path]] = No
     os.makedirs(tables_dir)
 
     api = wandb.Api()
-    #sweep = api.sweep(f'{WANDB_PROJECT}/{sweep_id}')
-    sweep = api.sweep('gijshendriksen/information_extraction/chxe9bvx')
+    sweep = api.sweep(f'{WANDB_PROJECT}/{sweep_id}')
+    #sweep = api.sweep('gijshendriksen/information_extraction/chxe9bvx')
 
     dfs = {}
 
