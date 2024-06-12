@@ -48,11 +48,8 @@ def get_wandb_tables(sweep_id: str, tables_root: Optional[Union[str, Path]] = No
     #sweep = api.sweep('gijshendriksen/information_extraction/chxe9bvx')
 
     dfs = {}
-    print(sweep.runs)
     for run in sweep.runs:
-        print(run.files())
         for file in run.files():
-            print(file.name)
             if file.name.startswith(f'media/table/{table_type}/test_'):
                 print(f'Downloading {run.name}: {file.name}')
                 with file.download(root=str(tables_dir), replace=True) as _file:
