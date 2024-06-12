@@ -1,11 +1,11 @@
 from information_extraction.analysis.tables import get_wandb_tables, print_latex_table, aggregate_tables
 from information_extraction.evaluation import get_evaluator
 
-SWEEP_ID = 'gn07j78t'
+SWEEP_ID = '80hq4n1h'
 
 
 def print_full_overview(evaluator, tables):
-    df_agg = aggregate_tables(evaluator, tables)#, run_name_parts=[0])
+    df_agg = aggregate_tables(evaluator, tables, run_name_parts=[0])
     df_agg.index.name = 'Model'
 
     print_latex_table(df_agg, caption='Performance of our extraction models, compared to several strong baselines.',
