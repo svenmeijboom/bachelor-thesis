@@ -50,6 +50,7 @@ def get_wandb_tables(sweep_id: str, tables_root: Optional[Union[str, Path]] = No
     dfs = {}
     print(sweep.runs)
     for run in sweep.runs:
+        print(run.files())
         for file in run.files():
             if file.name.startswith(f'media/table/{table_type}/test_'):
                 print(f'Downloading {run.name}: {file.name}')
