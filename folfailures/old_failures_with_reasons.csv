@@ -1,0 +1,69 @@
+vertical,website,doc_id,attribute,true,pred,reason
+Movie,various_websites10,0002,name,Lawrence of Arabia,lawrence of arabia p2t body p1t div p1i container p0t div p0i breadcrumb & # 62 ; p2t div p2i container p1t div p1i breadcrumb p0t b details,html encodings
+Movie,various_websites10,0171,name,"Planes, Trains and Automobiles",home alone,incorrect value
+Movie,various_websites10,0150,name,Somebody Up There Likes Me,silver chalice,nonsense
+Movie,various_websites10,0074,name,Yankee Doodle Dandy,jolson story,incorrect value
+Movie,various_websites10,0021,name,M*A*S*H,chaos of war,nonsense
+Movie,various_websites10,0048,name,WALL-E,brave little toaster,incorrect value
+Movie,various_websites10,0104,name,East of Eden,east of eden p2t body p1t div p1i container p0t div p0i breadcrumb & # 62 ; p2t div p2i container p1t div p1i breadcrumb p0t b details,html encodings
+Movie,various_websites10,0136,name,Alice Doesn't Live Here Anymore,gone with the wind,incorrect value
+Movie,various_websites10,0156,name,Manhattan Murder Mystery,after,nonsense
+Movie,various_websites10,0199,name,Jackie Brown,tough chicks tournament's final four,nonsense
+Movie,various_websites10,0149,name,Grease,star wars,incorrect value
+Movie,various_websites10,0125,name,Annapolis,better luck tomorrow,incorrect value
+Movie,various_websites10,0143,name,Serpico,dog day afternoon,incorrect value
+Movie,various_websites10,0121,name,Ofelas,pathfinder,incorrect value
+Movie,various_websites10,0134,name,An American Werewolf in London,werewolves,incomplete value
+Movie,various_websites10,0085,name,Ice Station Zebra,tigerfish,nonsense
+Movie,various_websites10,0129,name,Speed,speed 2,overcomplete value
+Movie,various_websites10,0105,name,2010,dullea,nonsense
+Movie,various_websites10,0179,name,Born on the Fourth of July,heaven and earth,incorrect value
+Movie,various_websites10,0123,name,Amadeus,,missed attribute
+Movie,various_websites10,0165,name,National Lampoon's Animal House,animal house,incomplete value
+Movie,various_websites10,0181,name,Robocop,,missed attribute
+Movie,various_websites10,0089,name,Oliver!,runaways,incorrect value
+Movie,various_websites10,0106,name,Solaris,undiscovered country,incorrect value
+Movie,various_websites10,0030,name,Fatal Attraction,diversion,nonsense
+Movie,various_websites10,0085,name,Ice Station Zebra,tigerfish,nonsense
+Movie,various_websites10,0125,name,Annapolis,better luck tomorrow,incorect value
+Movie,various_websites10,0015,name,National Lampoon's Animal House,animal house,incomplete value
+Movie,various_websites10,0005,name,Spartacus,,missed attribute
+Movie,various_websites10,0032,name,Arthur,on the rocks,nonsense
+Movie,various_websites10,0025,name,Kramer vs. Kramer,,missed attribute
+Movie,various_websites10,0131,name,Abby,relic,incorrect value
+Movie,various_websites10,0065,name,Vertigo,amctv. com p2t body p1t div p1i container p0t div p0i breadcrumb & # 62 ; p2t div p2i container p1t div p1i breadcrumb p0t a movie guide p2t body p1t div p1i container p0t div p0i breadcrumb & # 62 ; p2t div p2i container p1t div p1i breadcrumb p0t a vertigo,html encodings
+Movie,various_websites10,0193,name,Diner,diner p2t body p1t div p1i container p0t div p0i breadcrumb & # 62 ; p2t div p2i container p1t div p1i breadcrumb p0t b details,html encodings
+Movie,various_websites10,0110,name,Belle de Jour,beauty of the day,normalization error
+Movie,various_websites10,0143,name,Serpico,godfather,incorrect value
+Movie,various_websites10,0037,name,Unforgiven,don siegel,nonsense
+Movie,various_websites10,0105,name,2010,,missed attribute
+Movie,various_websites10,0164,name,Caddyshack II,,missed attribute
+Movie,various_websites10,0105,name,2010,,missed attribute
+Movie,various_websites10,0065,name,Vertigo,details,nonsense
+Movie,various_websites10,0059,name,Ferris Bueller's Day Off,details,incorrect value
+Movie,various_websites10,0199,name,Jackie Brown,jackie brown p2t body p1t div p1i container p0t div p0i breadcrumb & # 62 ; p2t div p2i container p1t div p1i breadcrumb p0t b details,html encodings
+Movie,various_websites10,0043,name,City Slickers,details,incorrect value
+Movie,various_websites10,0021,name,M*A*S*H,details,incorrect value
+Movie,various_websites10,0089,name,Oliver!,details,incorrect value
+Movie,various_websites10,0042,name,Philadelphia,details,incorrect value
+Movie,various_websites10,0121,name,Ofelas,details,incorrect value
+Movie,various_websites10,0077,name,42nd Street,,missed attribute
+Movie,various_websites10,0149,name,Grease,star wars,incorrect value
+Movie,various_websites10,0071,name,Fantasia,dumbo,incorrect value
+Movie,various_websites10,0145,name,Traffic,,missed attribute
+Movie,various_websites10,0133,name,The Order,,missed attribute
+Movie,various_websites10,0131,name,Abby,relic,incorrect value
+Movie,various_websites10,0156,name,Manhattan Murder Mystery,after,nonsense
+Movie,various_websites10,0059,name,Ferris Bueller's Day Off,,missed attribute
+Movie,various_websites10,0135,name,Mean Streets,betrayal,incorrect value
+Movie,various_websites10,0162,name,Metropolitan,,missed attribute
+Movie,various_websites10,0038,name,The Sixth Sense,haunting ( 1963,incorrect value
+Movie,various_websites10,0171,name,"Planes, Trains and Automobiles",home alone,incorrect value
+Movie,various_websites10,0176,name,Radio Days,brooklyn,nonsense
+Movie,various_websites10,0137,name,The Bear,,missed attribute
+Movie,various_websites10,0121,name,Ofelas,pathfinder,incorrect value
+Movie,various_websites10,0061,name,City Lights,,missed attribute
+Movie,various_websites10,0191,name,The Player,,missed attribute
+Movie,various_websites10,0143,name,Serpico,going undercover,nonsense
+Movie,various_websites10,0124,name,The Set-Up,,missed attribute
+Movie,various_websites10,0005,name,Spartacus,clockwork orange ( 1971,incorrect value

@@ -1,0 +1,101 @@
+vertical,website,doc_id,attribute,true,pred
+movie,allmovie,0526,title,Midnight Express,trumbo
+movie,iheartmovies,1163,title,Romeo + Juliet (1996),about i heart movies
+movie,allmovie,0472,title,Ganja and Hess,work rating
+movie,allmovie,1500,title,The Taking of Pelham One Two Three,work rating
+movie,iheartmovies,0601,title,I Am Sam (2001),about i heart movies
+movie,iheartmovies,0721,title,La battaglia di Algeri (1966),about i heart movies
+movie,allmovie,1830,title,Night Moves,work rating
+movie,iheartmovies,1555,title,The Great Mouse Detective (1986),about i heart movies
+movie,allmovie,1371,title,Chances Are,sylvia
+movie,allmovie,0615,title,Angel Baby,work rating
+movie,allmovie,0066,title,Victor/Victoria,work rating
+movie,allmovie,0451,title,Cronos,cobb
+movie,iheartmovies,0099,title,Canadian Bacon (1995),about i heart movies
+movie,allmovie,0775,title,Time Regained,work rating
+movie,iheartmovies,0183,title,Corky Romano (2001),about i heart movies
+movie,iheartmovies,1497,title,The Crush (1993),about i heart movies
+movie,allmovie,0396,title,Spies Like Us,work rating
+movie,allmovie,1139,title,Testament,last testament
+movie,allmovie,1980,title,Mourir d'aimer,work rating
+movie,iheartmovies,1332,title,Stay (2005),about i heart movies
+movie,amctv,0706,title,Advertising Rules,commercial man
+movie,rottentomatoes,0038,title,Body of Evidence,little vampire
+movie,amctv,1477,title,Paycheck,call him indy stalker
+movie,rottentomatoes,0214,title,Hollow Reed,milk of sorrow
+movie,rottentomatoes,1275,title,Wherever You Are (Lifelines),lifelines
+movie,rottentomatoes,1136,title,"Lovely, Still (2008)","lovely, still"
+movie,amctv,0912,title,Who Is Killing the Great Chefs of Europe?,those magnificent men in their flying machines ( 1965
+movie,amctv,1929,title,Pinocchio,live boy
+movie,rottentomatoes,0948,title,JSA: Joint Security Area (Gongdong gyeongbi guyeok JSA),joint security area
+movie,rottentomatoes,1588,title,Faster,driver
+movie,amctv,1446,title,Caché,piano teacher
+movie,rottentomatoes,1273,title,Danger: Diabolik,gold statue
+movie,amctv,1722,title,Gummo,kids ( 1995
+movie,rottentomatoes,1685,title,Firehouse Dog,leatherheads
+movie,amctv,1467,title,Cadaveri Eccellenti,parallax view ( 1974
+movie,rottentomatoes,1763,title,Big,milk of sorrow
+movie,rottentomatoes,1098,title,Three Men and a Baby (3 Men and a Baby),three men and a cradle
+movie,amctv,0346,title,Carnal Knowledge,slackers
+movie,rottentomatoes,0433,title,M� Panenko (The Firemen's Ball),meltdown
+movie,rottentomatoes,0363,title,Secret Agent,secret agent x - 9
+movie,amctv,0409,title,Roxanne,moonstruck ( 1987
+movie,rottentomatoes,1972,title,Confessions of a Teenage Drama Queen,confessions
+movie,amctv,1960,title,Eulogy,home for the holidays ( 1995
+movie,rottentomatoes,1749,title,As You Like It,milk of sorrow
+movie,amctv,1222,title,The Reivers,yellow winton flyer
+movie,amctv,1327,title,Que la Bête Meure,"let the beast die, this man must die"
+movie,rottentomatoes,0647,title,Down and Out in Beverly Hills,boudu saved from drowning
+movie,rottentomatoes,0783,title,Monumental: David Brower's Fight for Wild America,milk of sorrow
+movie,rottentomatoes,1596,title,Escaflowne - The Movie,milk of sorrow
+movie,rottentomatoes,1165,title,L'Iceberg,fiona's folly
+movie,amctv,1311,title,Don't Tell Mom the Babysitter's Dead,big ( 1988
+movie,amctv,0776,title,Fanboys,star wars
+movie,rottentomatoes,0709,title,The World's Fastest Indian,milk of sorrow
+movie,amctv,0242,title,Educating Rita,tootsie ( 1982
+movie,amctv,0121,title,Ofelas,news at eleven ( 1986
+movie,rottentomatoes,1042,title,The Dinner Game (Le D�ner de cons),dinner game
+movie,rottentomatoes,1105,title,Plan 9 from Outer Space,solaranite
+movie,rottentomatoes,0121,title,Eat Drink Man Woman (Yin shi nan nu),water for chocolate
+movie,rottentomatoes,0742,title,Los Abrazos Rotos (Broken Embraces) (Broken Hugs),un film de almodovar
+movie,rottentomatoes,1127,title,Shanghai Knights,cable tv
+movie,imdb,1945,title,Until Death,band of horses
+movie,yahoo,1457,title,&nbsp;,coraline
+movie,imdb,0609,title,Twelve,band of horses
+movie,yahoo,0365,title,Taxi Driver (1976),community
+movie,yahoo,1171,title,The Dust Factory (2004),community
+movie,yahoo,0763,title,The Visit (2000),community
+movie,imdb,0417,title,When Will I Be Loved,band of horses
+movie,yahoo,0224,title,Hard to Kill (1990),community
+movie,yahoo,0197,title,The Face of Another (1966),community
+movie,yahoo,0092,title,Fly Away Home (1996),community
+movie,yahoo,1919,title,Wonderful World (2010),community
+movie,yahoo,1764,title,Amelia (2009),community
+movie,yahoo,1444,title,Andrei Tarkovsky (1984),community
+movie,imdb,1708,title,The Crime of Father Amaro,amelia
+movie,imdb,1171,title,Wolf,nightmare on elm street
+movie,imdb,0758,title,Crank: High Voltage,ghost rider : spirit of vengeance
+movie,yahoo,1632,title,The Nutcracker in 3D (2010),community
+movie,imdb,1953,title,The Newton Boys,band of horses
+movie,yahoo,0081,title,Boys Don t Cry (1999),community
+movie,yahoo,1419,title,Night at the Museum (2006),community
+movie,hollywood,0224,title,Heatwave,inception
+movie,boxofficemojo,1815,title,Milk,tangled
+movie,hollywood,1115,title,I Love Budapest,inception
+movie,boxofficemojo,0628,title,Species II,tangled
+movie,hollywood,1342,title,Strayed,inception
+movie,boxofficemojo,0165,title,Shattered Glass,tangled
+movie,hollywood,0112,title,"Just You and Me, Kid",inception
+movie,boxofficemojo,1183,title,Hart's War,tangled
+movie,hollywood,1064,title,The Gleaners and I,inception
+movie,hollywood,0039,title,King Kong,inception
+movie,boxofficemojo,0727,title,The Game Plan,30 days of night
+movie,hollywood,1730,title,How to Lose Friends and Alienate People,chihuahua
+movie,hollywood,1698,title,Ace Ventura Jr.: Pet Detective,inception
+movie,boxofficemojo,1717,title,Along Came a Spider,tangled
+movie,hollywood,0435,title,The Good Wife,inception
+movie,hollywood,1586,title,Goya's Ghosts,inception
+movie,hollywood,1403,title,Moonlight,inception
+movie,hollywood,0550,title,I Hired a Contract Killer,inception
+movie,boxofficemojo,1509,title,Are We Done Yet?,tangled
+movie,boxofficemojo,0979,title,The Hand That Rocks the Cradle,tangled
