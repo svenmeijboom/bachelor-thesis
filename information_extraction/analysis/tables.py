@@ -48,7 +48,7 @@ def get_wandb_tables(sweep_id: str, tables_root: Optional[Union[str, Path]] = No
     #sweep = api.sweep('gijshendriksen/information_extraction/chxe9bvx')
 
     dfs = {}
-
+    print(sweep.runs)
     for run in sweep.runs:
         for file in run.files():
             if file.name.startswith(f'media/table/{table_type}/test_'):
@@ -60,10 +60,7 @@ def get_wandb_tables(sweep_id: str, tables_root: Optional[Union[str, Path]] = No
                 df.to_csv(tables_dir / f'{run.name}.csv', index=False)
                 dfs[run.name] = df
 
-    try:
-        shutil.rmtree(tables_dir / 'media')
-    except:
-        print('No tree')
+    shutil.rmtree(tables_dir / 'media')
 
     return dfs
 
